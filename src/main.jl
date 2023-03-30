@@ -10,6 +10,7 @@ end
 if length(ARGS) != 3
     println("Usage: julia main.jl <input_folder> <longform_file> <output_file>")
 else
-    main(ARGS[1], ARGS[2], ARGS[3])
+    main(args[1], args[2], args[3])
 end
-main("./examples", "./examples/main_note.md", "./examples/output.tex")
+#main("./examples", "./examples/main_note.md", "./examples/output/output.tex")
+main("../../myVault/Zettelkasten/", "../../myVault/Zettelkasten/Journal Sample Longform.md", "./examples/output/journal1/Export Journal Output.tex")

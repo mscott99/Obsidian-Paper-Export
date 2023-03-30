@@ -1,11 +1,19 @@
 function extract_link_info(link)
-    match_obj = match(r"(!?\[\[)(.*?)#(.*?)?(\]\])", link)
+    match_obj = match(r"!?\[\[(.*?)#(.*?)\]\]", link)
     if match_obj |> isnothing
-        return nothing
+        match_obj = match(r"!?\[\[(.*?)\]\]", link)
+        if match_obj |> isnothing
+            @warn "Could not extract link info from $link"
+            return nothing
+        end
+        return Dict(
+            :file_path => match_obj[1],
+            :anchor => ""
+        )
     end
     return Dict(
-        :file_path => match_obj[2],
-        :anchor => match_obj[3]
+        :file_path => match_obj[1],
+        :anchor => match_obj[2]
     )
 end
 

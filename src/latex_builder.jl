@@ -25,6 +25,8 @@ function build_latex(parsed_notes, input_folder::String, longform_file::String; 
 \\usepackage{amsmath}
 \\usepackage{amsthm}
 \\usepackage{amssymb}
+\\usepackage{biblatex}
+\\addbibresource{bibliography.bib}
 \\newtheorem{theorem}{Theorem}
 \\newtheorem{lemma}[theorem]{Lemma}
 \\newtheorem{corollary}[theorem]{Corollary}
@@ -37,6 +39,7 @@ function build_latex(parsed_notes, input_folder::String, longform_file::String; 
 $abstract
 \\end{abstract}
 $latex_body
+\\printbibliography
 \\end{document}
 """
 end
@@ -122,20 +125,24 @@ function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::
                 environment = match_obj[1]
                 statement = match_obj[2]
                 linkinfo = extract_link_info(statement) #assume that what follows lemma:: is a embed link
-                latex_label = generate_latex_label(linkinfo[:file_path], linkinfo[:anchor])
+                latex_label = generate_latex_label(linkinfo[:file_path])
                 latex = "\n\\begin{$(environment)}\n\\label{$latex_label}\n$(handle_embed_link(statement, parsed_notes, input_folder, depth+1; added_within_environment=true))\n\\end{$(environment)}\n"
             end
         else
-
-            latex = replace(elem, r"!\[\[(.+?)\]\]" => s -> handle_embed_link(s, parsed_notes, input_folder, depth + 1))
-            latex = replace(latex, r"\[\[(.+?)\]\]" => s -> handle_ref_wikilink(s))
-            latex = replace(latex, r"\[\[@(.+?)\]\]" => s -> "\\cite{$s}")
+            latex = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, parsed_notes, input_folder, depth + 1))
+            latex = replace(latex, r"\[\[@.+?\]\]" => s -> "\\cite{$(match(r"\[\[@(.+?)\]\]", s)[1])}")
+            latex = replace(latex, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s))
         end
     elseif isa(elem, Markdown.LaTeX)
-        latex = "\$" * elem.formula * "\$"
+        if match(r"\begin{align", elem.formula) !== nothing
+            latex = elem.formula
+        else
+            latex = "\$" * elem.formula * "\$"
+        end
     end
     return latex
 end
+
 function handle_ref_wikilink(link)
     link_info = extract_link_info(link)
     if link_info === nothing
@@ -203,8 +210,7 @@ function find_heading_content(note::Markdown.MD, target_heading, parsed_notes::D
             end
         end
         if found_heading
-            wrapped_elem = Markdown.MD([elem])
-            content *= generate_latex(wrapped_elem, parsed_notes, input_folder; depth=depth + 1) * "\n"
+            content *= convert_to_latex(elem, parsed_notes, input_folder, depth + 1) * "\n"
         end
     end
 

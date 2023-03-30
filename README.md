@@ -9,6 +9,10 @@ This project exports an Obsidian note to a LaTeX math academic paper, retaining 
 - Retain embedded content through Obsidian wikilinks
 - Support for mathematical expressions, theorems, lemmas, and proofs
 
+## Development Stage
+
+Not functional yet.
+
 ## Prerequisites
 
 - Julia (tested on v1.6)

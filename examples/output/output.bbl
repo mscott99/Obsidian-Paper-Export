@@ -1,0 +1,78 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{rudelsonSparseReconstructionFourier2008}{article}{}
+      \name{author}{2}{}{%
+        {{hash=17f8ebc6cc9cb7ba672b5e429451accf}{%
+           family={Rudelson},
+           familyi={R\bibinitperiod},
+           given={Mark},
+           giveni={M\bibinitperiod}}}%
+        {{hash=711c5aa2fe76a4ff674a2c6e2c7a2d91}{%
+           family={Vershynin},
+           familyi={V\bibinitperiod},
+           given={Roman},
+           giveni={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{2bb5baecdcf26d5fa7ed5716279cf197}
+      \strng{fullhash}{2bb5baecdcf26d5fa7ed5716279cf197}
+      \strng{bibnamehash}{2bb5baecdcf26d5fa7ed5716279cf197}
+      \strng{authorbibnamehash}{2bb5baecdcf26d5fa7ed5716279cf197}
+      \strng{authornamehash}{2bb5baecdcf26d5fa7ed5716279cf197}
+      \strng{authorfullhash}{2bb5baecdcf26d5fa7ed5716279cf197}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This paper improves upon best-known guarantees for exact reconstruction of a sparse signal f from a small universal sample of Fourier measurements. The method for reconstruction that has recently gained momentum in the sparse approximation theory is to relax this highly nonconvex problem to a convex problem and then solve it as a linear program. We show that there exists a set of frequencies such that one can exactly reconstruct every r-sparse signal f of length n from its frequencies in , using the convex relaxation, and has size k.r; n/ D O.r log.n/ log2.r/ log.r log n// D O.r log4 n/: A random set satisfies this with high probability. This estimate is optimal within the log log n and log3 r factors. We also give a relatively short argument for a similar problem with k.r; n/ rŒ12 C 8 log.n=r/ Gaussian measurements. We use methods of geometric functional analysis and probability theory in Banach spaces, which makes our arguments quite short.}
+      \field{issn}{00103640, 10970312}
+      \field{journaltitle}{Communications on Pure and Applied Mathematics}
+      \field{langid}{english}
+      \field{month}{8}
+      \field{number}{8}
+      \field{shortjournal}{Comm. Pure Appl. Math.}
+      \field{title}{On Sparse Reconstruction from {{Fourier}} and {{Gaussian}} Measurements}
+      \field{urlday}{27}
+      \field{urlmonth}{2}
+      \field{urlyear}{2022}
+      \field{volume}{61}
+      \field{year}{2008}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \field{pages}{1025\bibrangedash 1045}
+      \range{pages}{21}
+      \verb{doi}
+      \verb 10.1002/cpa.20227
+      \endverb
+      \verb{file}
+      \verb /Users/matthewscott/Zotero/storage/BDQG6CHR/Rudelson and Vershynin - 2008 - On sparse reconstruction from Fourier and Gaussian.pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://onlinelibrary.wiley.com/doi/10.1002/cpa.20227
+      \endverb
+      \verb{url}
+      \verb https://onlinelibrary.wiley.com/doi/10.1002/cpa.20227
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

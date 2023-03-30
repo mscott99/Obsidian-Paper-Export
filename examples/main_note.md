@@ -14,6 +14,6 @@ The main theorem is:
 theorem::![[theorem_1#Statement]]
 
 # Proofs
-Here is the proof for the main theorem. The proof is specifically for [[theorem_1#Statement]].
+Here is the proof for the main theorem. The proof is specifically for [[theorem_1#Statement]]. I may or may not follow from [[@rudelsonSparseReconstructionFourier2008]].
 
 ![[theorem_1#Proof]]
