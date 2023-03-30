@@ -1,12 +1,12 @@
 # Fdb version 3
-["biber output"] 1680155676 "output.bcf" "output.bbl" "output" 1680155680
+["biber output"] 1680195575 "output.bcf" "output.bbl" "output" 1680195579
   "bibliography.bib" 1680155563 1754 541da343a8bed79a4ca7c0094edfb47b ""
-  "output.bcf" 1680155680 107149 99e2e7f5a9a83abc93be1ee205cd34f1 "pdflatex"
+  "output.bcf" 1680195579 107149 99e2e7f5a9a83abc93be1ee205cd34f1 "pdflatex"
   (generated)
   "output.bbl"
   "output.blg"
-["pdflatex"] 1680155679 "/Users/matthewscott/Obsidian/export_markdown/Obsidian Paper Export/examples/output/output.tex" "output.pdf" "output" 1680155680
-  "/Users/matthewscott/Obsidian/export_markdown/Obsidian Paper Export/examples/output/output.tex" 1680155674 1715 e17e917b122859fa30ede02929be2248 ""
+["pdflatex"] 1680195578 "/Users/matthewscott/Obsidian/export_markdown/Obsidian Paper Export/examples/output/output.tex" "output.pdf" "output" 1680195579
+  "/Users/matthewscott/Obsidian/export_markdown/Obsidian Paper Export/examples/output/output.tex" 1680195575 2062 925262fd23963c87543216f6a62421bf ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -38,7 +38,9 @@
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1248133631 32080 340ef9bf63678554ee606688e7b5339d ""
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb" 1248133631 32298 c6d25bb16d1eac01ebdc6d7084126a1e ""
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb" 1248133631 32001 6aeea3afe875097b1eb0da29acd61e28 ""
+  "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1248133631 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1248133631 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
+  "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1248133631 36281 c355509802a035cadc5f15869451dcee ""
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1248133631 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1248133631 32362 179c33bbf43f19adbb3825bb4e36e57a ""
@@ -109,11 +111,11 @@
   "/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1647878959 4410336 7d30a02e9fa9a16d7d1f8d037ba69641 ""
   "/usr/local/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt" 1672995135 2826443 f7e5474fcb08ba479abacdb26a9d6bea ""
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
-  "output.aux" 1680155680 1613 18a2e8b483d8a3d69915c02fa5eb166b "pdflatex"
-  "output.bbl" 1680155677 3575 6736bd406930786deebcedab40f45208 "biber output"
-  "output.out" 1680155680 254 3e3e1cf14eeaabe728b3ba78d97a32a5 "pdflatex"
-  "output.run.xml" 1680155680 2321 f649244127c55b67eea687e1b810d776 "pdflatex"
-  "output.tex" 1680155674 1715 e17e917b122859fa30ede02929be2248 ""
+  "output.aux" 1680195579 1593 b90687536380067b619a7c975296ac5e "pdflatex"
+  "output.bbl" 1680195577 3575 6736bd406930786deebcedab40f45208 "biber output"
+  "output.out" 1680195579 254 3e3e1cf14eeaabe728b3ba78d97a32a5 "pdflatex"
+  "output.run.xml" 1680195579 2321 f649244127c55b67eea687e1b810d776 "pdflatex"
+  "output.tex" 1680195575 2062 925262fd23963c87543216f6a62421bf ""
   (generated)
   "output.aux"
   "output.bcf"

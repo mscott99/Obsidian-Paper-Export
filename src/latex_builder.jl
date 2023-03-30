@@ -9,30 +9,25 @@ function generate_latex_label(file_name)
 end
 
 function build_latex(parsed_notes, input_folder::String, longform_file::String; metadata=Dict())
+
     main_note = parsed_notes[longform_file]
     abstract = find_heading_content(main_note, "Abstract", parsed_notes, input_folder, 0)
     latex_body = generate_latex(main_note, parsed_notes, input_folder; depth=0, skip_abstract=true)
 
-    document_class = get(metadata, "document_class", "article")
-    authors = get(metadata, "authors", "Author")
-    title = get(metadata, "title", "Title")
+    authors = get(metadata, "author", "Author")
+    title = get(metadata, "title", longform_file)
     # TODO remove the content of the abstract from the body.
 
 
     return """
-\\documentclass{$document_class}
-\\usepackage{hyperref}
-\\usepackage{amsmath}
-\\usepackage{amsthm}
-\\usepackage{amssymb}
-\\usepackage{biblatex}
+\\documentclass{article}
+\\input{header}
+\\input{preamble.sty}
 \\addbibresource{bibliography.bib}
-\\newtheorem{theorem}{Theorem}
-\\newtheorem{lemma}[theorem]{Lemma}
-\\newtheorem{corollary}[theorem]{Corollary}
-\\newtheorem{definition}{Definition}
+
 \\title{$title}
 \\author{$authors}
+
 \\begin{document}
 \\maketitle
 \\begin{abstract}
@@ -44,17 +39,7 @@ $latex_body
 """
 end
 
-function extract_metadata(note::Markdown.MD)
-    metadata = Dict{String,Any}()
-    for elem in note.content
-        if isa(elem, Markdown.Header) && typeof(elem).parameters[1] == 1
-            key = elem.text
-            value = elem.content
-            metadata[key] = value
-        end
-    end
-    return metadata
-end
+
 
 function generate_latex(note::Markdown.MD, parsed_notes::Dict{String,<:Any}, input_folder; depth::Int=0, skip_abstract::Bool=true)
     latex = ""
@@ -93,14 +78,14 @@ function generate_latex(note::Markdown.MD, parsed_notes::Dict{String,<:Any}, inp
     return latex
 end
 
-function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int)
+function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
     # Convert Markdown elements to LaTeX
     latex = ""
     if isa(elem, Markdown.Paragraph)
-        latex = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth), elem.content), " ")
+        latex = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.content), " ") * "\n"
     elseif isa(elem, Markdown.Header)
         level = typeof(elem).parameters[1]
-        header_text = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth), elem.text), " ")
+        header_text = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.text), " ")
         latex_label = generate_latex_label("section", header_text)
         latex = "\n\\$(level == 1 ? "section" : "subsection"){$header_text}\\label{$latex_label}\n"
     elseif isa(elem, Markdown.Ref)
@@ -125,7 +110,7 @@ function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::
                 environment = match_obj[1]
                 statement = match_obj[2]
                 linkinfo = extract_link_info(statement) #assume that what follows lemma:: is a embed link
-                latex_label = generate_latex_label(linkinfo[:file_path])
+                latex_label = generate_latex_label(linkinfo[:file_name])
                 latex = "\n\\begin{$(environment)}\n\\label{$latex_label}\n$(handle_embed_link(statement, parsed_notes, input_folder, depth+1; added_within_environment=true))\n\\end{$(environment)}\n"
             end
         else
@@ -134,10 +119,14 @@ function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::
             latex = replace(latex, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s))
         end
     elseif isa(elem, Markdown.LaTeX)
-        if match(r"\begin{align", elem.formula) !== nothing
-            latex = elem.formula
+        if match(r"\\begin{align", elem.formula) !== nothing
+            latex = "\n" * elem.formula * "\n"
         else
-            latex = "\$" * elem.formula * "\$"
+            if inline
+                latex = "\$" * elem.formula * "\$"
+            else
+                latex = "\n\\begin{equation*}\n" * elem.formula * "\n\\end{equation*}\n"
+            end
         end
     end
     return latex
@@ -149,12 +138,10 @@ function handle_ref_wikilink(link)
         @warn "Could not extract link info from $link"
         return link
     end
-
-    if link_info[:anchor] == ""
-        return "\\autoref{$(generate_latex_label(link_info[:file_path]))}"
-    else
-        return "\\autoref{$(generate_latex_label(link_info[:file_path], link_info[:anchor]))}"
+    if !isnothing(link_info[:display_name])
+        return "$(link_info[:display_name])\\ref{$(generate_latex_label(link_info[:file_name]))}"
     end
+    return "\\autoref{$(generate_latex_label(link_info[:file_name]))}"
 end
 
 function handle_embed_link(link, parsed_notes::Dict{String,<:Any}, input_folder, depth::Int; added_within_environment=false)
@@ -162,7 +149,7 @@ function handle_embed_link(link, parsed_notes::Dict{String,<:Any}, input_folder,
     if link_info === nothing
         return link
     end
-    file_name = link_info[:file_path] * ".md"
+    file_name = link_info[:file_name] * ".md"
     file_path = joinpath(input_folder, file_name)  # join input_folder and file_name to get full file path
     anchor = link_info[:anchor]
 
@@ -170,7 +157,7 @@ function handle_embed_link(link, parsed_notes::Dict{String,<:Any}, input_folder,
         return link
     end
     if isempty(anchor)
-        label = create_autoref_label(file_path)
+        label = generate_latex_label(file_path)
         return "\\autoref{$label}"
     else
         embedded_note = parsed_notes[file_path]

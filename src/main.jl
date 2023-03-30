@@ -2,8 +2,9 @@ include("obsidian_parser.jl")
 include("latex_builder.jl")
 
 function main(input_folder::String, longform_file::String, output_file::String)
+    metadata = extract_metadata(joinpath(input_folder, longform_file))
     parsed_notes = parse_obsidian_folder(input_folder)
-    latex = build_latex(parsed_notes, input_folder, longform_file)
+    latex = build_latex(parsed_notes, input_folder, longform_file; metadata)
     write(output_file, latex)
 end
 
