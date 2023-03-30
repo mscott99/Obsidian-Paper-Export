@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}{Definition}
+\title{Title}
+\author{Author}
+\begin{document}
+\maketitle
+\begin{abstract}
+This is a simple example to showcase the Obsidian to LaTeX converter.
+
+\end{abstract}
+
+\section{Introduction}\label{section:Introduction}
+This document demonstrates the conversion of Markdown notes to a LaTeX document, including internal links and embedded content.
+\section{Results}\label{section:Results}
+We present the following lemma:
+\begin{lemma}
+\label{lemma_1:Statement}
+Every even integer greater than 2 can be expressed as the sum of two prime numbers.
+
+\end{lemma}
+The main theorem is:
+\begin{theorem}
+\label{theorem_1:Statement}
+For every positive integer  $n$ , the sum of the first  $n$  odd integers is equal to  $n^2$ .
+
+\end{theorem}
+
+\section{Proofs}\label{section:Proofs}
+Here is the proof for the main theorem. The proof is specifically for \autoref{theorem_1:Statement}.
+\begin{proof}
+We proceed by induction.
+Base case ( $n = 1$ ): The sum of the first odd integer (1) is equal to  $1^2$ , which is true.
+Inductive step: Assume that the sum of the first  $k$  odd integers is equal to  $k^2$ . We want to show that the sum of the first  $k+1$  odd integers is equal to  $(k+1)^2$ .
+The sum of the first  $k$  odd integers is  $k^2$ . The next odd integer is  $(2k+1)$ . Therefore, the
+
+\end{proof}
+
+\end{document}
