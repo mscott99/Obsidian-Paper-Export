@@ -6,6 +6,13 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 
 # Results
 
+$$
+\begin{align*}
+  \|\hat x - x_0\|_2
+  \leq \|x^\perp\|_2 + 3\|\tilde{F}x^\perp\|_2 + 3 \|\eta\|_2 + \frac{3}{2}\hat\varepsilon.
+\end{align*}
+$$
+
 replace all double dollars with math blocks and parse with github syntax. Then in the logic recover the display equation from the fact that it is also its own paragraph.
 
 Here is some $\sum a_i$.

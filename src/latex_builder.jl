@@ -1,13 +1,5 @@
 include("utils.jl")
 
-function generate_latex_label(file_name, anchor)
-    return "$file_name:$anchor"
-end
-
-function generate_latex_label(file_name)
-    return "$file_name"
-end
-
 function build_latex(parsed_notes, input_folder::String, longform_file::String; metadata=Dict())
 
     main_note = parsed_notes[longform_file]
@@ -45,91 +37,95 @@ function generate_latex(note::Markdown.MD, parsed_notes::Dict{String,<:Any}, inp
     latex = ""
     in_abstract = false
     for elem in note.content
-        if isa(elem, Markdown.Header) && typeof(elem).parameters[1] == 1
-            if join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth), elem.text), " ") == "Abstract"
-                in_abstract = true
-                continue # skip the abstract header
-            elseif in_abstract
-                in_abstract = false
-            end
+        if skip_abstract && isa(elem, Markdown.Header) && typeof(elem).parameters[1] == 1 && join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth), elem.text), " ") == "Abstract"
+            in_abstract = true
+            continue # skip the abstract header
+        elseif skip_abstract && in_abstract && isa(elem, Markdown.Header) && typeof(elem).parameters[1] == 1
+            in_abstract = false
         end
+
         if !in_abstract || !skip_abstract
             latex *= convert_to_latex(elem, parsed_notes, input_folder, depth)
         end
-        # isa(elem, Markdown.Link) && occursin(r"!?\[\[(.+?)\]\]", elem.url)
-        #    m = match(r"!?\[\[(.+?)\]\]", elem.url)
-        #    if m !== nothing
-        #        full_anchor = m.captures[1]
-        #        file, anchor = split_anchor(full_anchor)
-        #        if haskey(parsed_notes, file)
-        #            if anchor != ""
-        #                embedded_content = find_heading_content(parsed_notes[file], anchor, parsed_notes, input_folder, depth)
-        #                latex *= embedded_content
-        #            else
-        #                latex *= generate_latex(parsed_notes[file], parsed_notes, input_folder; depth=depth + 1)
-        #            end
-        #        end
-        #    end
-        #else
-
-
-
     end
     return latex
 end
 
-function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+function convert_to_latex(elem::Markdown.Paragraph, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
     # Convert Markdown elements to LaTeX
-    latex = ""
-    if isa(elem, Markdown.Paragraph)
-        latex = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.content), " ") * "\n"
-    elseif isa(elem, Markdown.Header)
-        level = typeof(elem).parameters[1]
-        header_text = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.text), " ")
-        latex_label = generate_latex_label("section", header_text)
-        latex = "\n\\$(level == 1 ? "section" : "subsection"){$header_text}\\label{$latex_label}\n"
-    elseif isa(elem, Markdown.Ref)
-        label = create_autoref_label(elem.label)
-        latex = "\\autoref{$label}"
-    elseif isa(elem, Markdown.Code)
-        latex = "\\texttt{$(escape_latex(elem.code))}"
-    elseif isa(elem, Markdown.Bold)
-        latex = "\\textbf{$(join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth), elem.text), " "))}"
-    elseif isa(elem, Markdown.Italic)
-        latex = "\\textit{$(join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth), elem.text), " "))}"
-    elseif isa(elem, Markdown.BlockQuote)
-        latex = "\\begin{quote}\n$(generate_latex(elem, parsed_notes, input_folder, depth=depth+1))\\end{quote}"
-    elseif isa(elem, Markdown.List)
-        latex = "\\begin{itemize}\n$(join(map(x -> "\\item $(generate_latex(x, parsed_notes, input_folder, depth=depth+1))", elem.items), "\n"))\\end{itemize}"
-    elseif isa(elem, String)
+    join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.content), " ") * "\n"
+end
 
-        if match(r"^(lemma|theorem|corollary|definition)::", elem) !== nothing
-            pattern = r"^(lemma|theorem|corollary|definition)::(.*)$"
-            match_obj = match(pattern, elem)
-            if match_obj !== nothing
-                environment = match_obj[1]
-                statement = match_obj[2]
-                linkinfo = extract_link_info(statement) #assume that what follows lemma:: is a embed link
-                latex_label = generate_latex_label(linkinfo[:file_name])
-                latex = "\n\\begin{$(environment)}\n\\label{$latex_label}\n$(handle_embed_link(statement, parsed_notes, input_folder, depth+1; added_within_environment=true))\n\\end{$(environment)}\n"
-            end
+
+function convert_to_latex(elem::Markdown.Header, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    rendered_header_text = join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.text), " ")
+    return "\n\\$(typeof(elem).parameters[1] == 1 ? "section" : "subsection"){$rendered_header_text}\n\\label{section:$rendered_header_text}\n"
+end
+
+function convert_to_latex(elem::Markdown.Ref, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "\\autoref{$elem.label}"
+end
+
+function convert_to_latex(elem::Markdown.Code, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "\\texttt{$(escape_latex(elem.code))}"
+end
+
+function convert_to_latex(elem::Markdown.Bold, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "\\textbf{$(join(map(x -> convert_to_latex(x , parsed_notes, input_folder, depth, true), elem.text), " "))}"
+end
+
+function convert_to_latex(elem::Markdown.Italic, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "\\textit{$(join(map(x -> convert_to_latex(x , parsed_notes, input_folder, depth, true), elem.text), " "))}"
+end
+
+function convert_to_latex(elem::Markdown.BlockQuote, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "\\begin{quote}\n$(generate_latex(elem, parsed_notes, input_folder, depth=depth+1))\\end{quote}"
+end
+
+function convert_to_latex(elem::Markdown.List, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "\\begin{itemize}\n$(join(map(x -> "\\item $(generate_latex(x, parsed_notes, input_folder, depth=depth+1))", elem.items), "\n"))\\end{itemize}"
+end
+
+function convert_to_latex(elem::Markdown.Link, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    if elem.url[1] == '#'
+        return "\\autoref{$(elem.url[2:end])}"
+    else
+        return "\\href{$(elem.url)}{$(join(map(x -> convert_to_latex(x, parsed_notes, input_folder, depth, true), elem.text), " "))}"
+    end
+end
+
+function convert_to_latex(elem, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    return "NOT IMPLEMENTED: $(typeof(elem))"
+end
+
+convert_to_latex(elem::Markdown.HorizontalRule, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false) = "\\hrulefill"
+
+function convert_to_latex(elem::Union{String,SubString}, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.*\]\])(.*)", elem)) !== nothing
+        environment = match_obj[1]
+        statement = match_obj[2]
+        linkinfo = extract_link_info(statement) #assume that what follows lemma:: is a embed link
+        latex_label = linkinfo[:file_name]
+        displayed_result_name = environment in ("lemma", "theorem", "corollary", "definition") ? "[$(linkinfo[:file_name])]" : ""
+        return "\n\\begin{$(environment)}$displayed_result_name\n\\label{$latex_label}\n$(handle_embed_link(statement, parsed_notes, input_folder, depth+1; added_within_environment=true))\n\\end{$(environment)}\n$(convert_to_latex(match_obj[3], parsed_notes, input_folder, depth, inline))\n"
+    else
+        latex = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, parsed_notes, input_folder, depth + 1))
+        latex = replace(latex, r"\[\[@.+?\]\]" => s -> "\\cite{$(match(r"\[\[@(.+?)\]\]", s)[1])}")
+        latex = replace(latex, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s))
+        return latex
+    end
+end
+
+function convert_to_latex(elem::Markdown.LaTeX, parsed_notes::Dict{String,<:Any}, input_folder::String, depth::Int, inline=false)
+    if match(r"\\begin{align", elem.formula) !== nothing
+        return "\n" * elem.formula * "\n"
+    else
+        if inline
+            return "\$" * elem.formula * "\$"
         else
-            latex = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, parsed_notes, input_folder, depth + 1))
-            latex = replace(latex, r"\[\[@.+?\]\]" => s -> "\\cite{$(match(r"\[\[@(.+?)\]\]", s)[1])}")
-            latex = replace(latex, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s))
-        end
-    elseif isa(elem, Markdown.LaTeX)
-        if match(r"\\begin{align", elem.formula) !== nothing
-            latex = "\n" * elem.formula * "\n"
-        else
-            if inline
-                latex = "\$" * elem.formula * "\$"
-            else
-                latex = "\n\\begin{equation*}\n" * elem.formula * "\n\\end{equation*}\n"
-            end
+            return "\n\\begin{equation*}\n" * elem.formula * "\n\\end{equation*}\n"
         end
     end
-    return latex
 end
 
 function handle_ref_wikilink(link)
@@ -139,16 +135,21 @@ function handle_ref_wikilink(link)
         return link
     end
     if !isnothing(link_info[:display_name])
-        return "$(link_info[:display_name])\\ref{$(generate_latex_label(link_info[:file_name]))}"
+        return "$(link_info[:display_name])\\ref{$(link_info[:file_name])}"
     end
-    return "\\autoref{$(generate_latex_label(link_info[:file_name]))}"
+    return "\\autoref{$(link_info[:file_name])}"
 end
 
 function handle_embed_link(link, parsed_notes::Dict{String,<:Any}, input_folder, depth::Int; added_within_environment=false)
+    if depth >= 50
+        @warn "Maximum depth reached"
+        return link
+    end
     link_info = extract_link_info(link)
     if link_info === nothing
         return link
     end
+    label_name = link_info[:file_name]
     file_name = link_info[:file_name] * ".md"
     file_path = joinpath(input_folder, file_name)  # join input_folder and file_name to get full file path
     anchor = link_info[:anchor]
@@ -156,24 +157,22 @@ function handle_embed_link(link, parsed_notes::Dict{String,<:Any}, input_folder,
     if !haskey(parsed_notes, file_path)
         return link
     end
-    if isempty(anchor)
-        label = generate_latex_label(file_path)
-        return "\\autoref{$label}"
+
+    embedded_note = parsed_notes[file_path]
+    if isnothing(anchor)
+        return generate_latex(embedded_note, parsed_notes, input_folder, depth=depth + 1)
+    end
+
+    content = find_heading_content(embedded_note, anchor, parsed_notes, input_folder, depth + 1)
+
+    if anchor == "Statement" && !added_within_environment
+        return "\n\\begin{lemma}[$label_name]\n\\label{$label_name}\n$content\n\\end{lemma}\n"
+    elseif anchor == "Proof" && !added_within_environment
+        return "\n\\begin{proof}[Proof of~{\\autoref{$label_name}}]\n\\label{proof:$(label_name)}\n$content\n\\end{proof}\n"
+    elseif !isnothing(match(r"Remarks!", anchor)) && !added_within_environment
+        return "\n\\begin{remark}\n\\label{remark:$(label_name)}\n$content\n\\end{remark}\n"
     else
-        embedded_note = parsed_notes[file_path]
-        if isnothing(anchor)
-            return embedded_note.content
-        end
-
-        content = find_heading_content(embedded_note, anchor, parsed_notes, input_folder, depth + 1)
-
-        if anchor == "Statement" && !added_within_environment
-            return "\n\\begin{lemma}\n$content\n\\end{lemma}\n"
-        elseif anchor == "Proof" && !added_within_environment
-            return "\n\\begin{proof}\n$content\n\\end{proof}\n"
-        else
-            return content
-        end
+        return content
     end
 end
 
@@ -195,6 +194,8 @@ function find_heading_content(note::Markdown.MD, target_heading, parsed_notes::D
                     continue
                 end
             end
+        elseif isa(elem, Markdown.HorizontalRule) && found_heading
+            break # do not include stuff after the rule at the end of the file.
         end
         if found_heading
             content *= convert_to_latex(elem, parsed_notes, input_folder, depth + 1) * "\n"

@@ -12,7 +12,7 @@ function extract_link_info(link)
 end
 
 function escape_latex(text::String)
-    replacements = Dict(
+    replacements = (
         '\\' => "\\textbackslash{}",
         '{' => "\\{",
         '}' => "\\}",
@@ -25,7 +25,7 @@ function escape_latex(text::String)
         '"' => "\\\"",
         '\'' => "\\'"
     )
-    return replace(text, replacements)
+    return replace(text, replacements...)
 end
 
 function split_anchor(full_anchor::String)

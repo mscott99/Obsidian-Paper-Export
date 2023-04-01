@@ -1,1 +1,12 @@
 .DS_Store
+/examples/output/journal1/
+/examples/output/uneven_journal/
+*.aux
+*.log
+*.bcf
+*.fdb_latexmk
+*.run.xml
+*.fls
+workspace.json
+examples/.obsidian/workspace.json
+examples/.obsidian/workspace.json
