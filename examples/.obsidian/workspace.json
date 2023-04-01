@@ -148,17 +148,17 @@
   },
   "active": "02ef8af5cf640fcf",
   "lastOpenFiles": [
-    "output/journal1/__latexindent_temp_Export Journal Output.tex",
-    "output/journal1/pdflatex26651.fls",
-    "output/journal1/Export Journal Output.synctex(busy)",
-    "output/journal1/pdflatex26633.fls",
-    "output/journal1/header.tex",
-    "output/journal1/pdflatex26568.fls",
-    "output/journal1/pdflatex26554.fls",
-    "output/journal1/Export Journal Output.bbl",
-    "output/journal1/Export Journal Output.blg",
-    "output/journal1/indent.log",
-    "output/journal1/pdflatex22987.fls",
+    "output/example_output/pdflatex63015.fls",
+    "output/example_output/pdflatex63001.fls",
+    "output/example_output/output.tex",
+    "output/example_output/output.run.xml",
+    "output/example_output/output.pdf",
+    "output/example_output/output.log",
+    "output/example_output/output.fls",
+    "output/example_output/output.fdb_latexmk",
+    "output/example_output/output.bcf",
+    "output/example_output/output.aux",
+    "output/example_output/bibliography.bib",
     "@rudelsonSparseReconstructionFourier2008.md"
   ]
 }
