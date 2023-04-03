@@ -7,3 +7,4 @@
 *.fdb_latexmk
 *.run.xml
 *.fls
+examples/.obsidian/workspace.json

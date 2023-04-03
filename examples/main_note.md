@@ -13,8 +13,6 @@ $$
 \end{align*}
 $$
 
-replace all double dollars with math blocks and parse with github syntax. Then in the logic recover the display equation from the fact that it is also its own paragraph.
-
 Here is some $\sum a_i$.
 
 ```math

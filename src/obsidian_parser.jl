@@ -15,7 +15,8 @@ function parse_obsidian_file(file_path::String)
     #content = read(file_path, String)
 
     #pre_processed = replace(md, r"\$\$\n(.+?)\n\$\$" => s -> "\$\$$(match(r"\$\$\n(.+?)\n\$\$",s)[1])\$\$")
-    pre_processed = replace(md, r"\$\$\n?(.|\n)+?\n?\$\$" => s -> "```math\n$(match(r"\$\$\n?((?:.|\n)+?)\n?\$\$", s)[1])\n```")
+    process_eq(eq) = replace(eq, r"\n+" => "\n") # remove newlines
+    pre_processed = replace(md, r"\$\$(?:\s|\n)*(.|\n)+?(?:\s|\n)*\$\$" => s -> "```math\n$(process_eq(match(r"\$\$(?:\s|\n)*((?:.|\n)+?)(?:\s|\n)*\$\$", s)[1]))\n```")
 
     return Markdown.parse(pre_processed; flavor=:julia)
 end
