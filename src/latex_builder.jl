@@ -120,7 +120,7 @@ convert_to_latex(elem, state::State) = "NOT IMPLEMENTED: $(typeof(elem))"
 convert_to_latex(elem::Markdown.HorizontalRule, state::State) = "\\hrulefill\n"
 
 function convert_to_latex(elem::Union{String,SubString}, state::State)
-    if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.*\]\])(.*)", elem)) !== nothing
+    if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.+?\]\])(.*)", elem)) !== nothing
         return handle_embed_link(match_obj[2], match_obj[1], state) * convert_to_latex(match_obj[3], state)
     else
         latex = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, nothing, state))

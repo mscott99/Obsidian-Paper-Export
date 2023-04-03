@@ -25,7 +25,6 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
   \|\hat x - x_0\|_2
   \leq \|x^\perp\|_2 + 3\|\tilde{F}x^\perp\|_2 + 3 \|\eta\|_2 + \frac{3}{2}\hat\varepsilon.
 \end{align*}
-replace all double dollars with math blocks and parse with github syntax. Then in the logic recover the display equation from the fact that it is also its own paragraph.
 Here is some  $\sum a_i$ .
 
 \begin{equation*}
@@ -40,7 +39,7 @@ Here is some  $\sum a_i$ .
 \sum_{i=1}^n A_3
 \end{equation*}
 We present the following lemma:
-lemma::
+
 \begin{lemma}[lemma_1]
 \label{lemma_1}
 Every even integer greater than 2 can be expressed as the sum of two prime numbers.
@@ -48,21 +47,24 @@ Every even integer greater than 2 can be expressed as the sum of two prime numbe
 
 \end{lemma}
 
+
+\section{Major Headding}
+\label{section:Major Headding}
 The main theorem is:
-theorem::
-\begin{lemma}[theorem_1]
+
+\begin{theorem}[theorem_1]
 \label{theorem_1}
 For every positive integer  $n$ , the sum of the first  $n$  odd integers is equal to  $n^2$ .
 
 
-\end{lemma}
+\end{theorem}
 
 
 \section{Proofs}
 \label{section:Proofs}
 Here is the proof for the main theorem. The proof is specifically for \autoref{theorem_1}. I may or may not follow from \cite{rudelsonSparseReconstructionFourier2008}.
 
-\begin{proof}
+\begin{proof}[Proof of~{\autoref{theorem_1}}]
 \label{proof:theorem_1}
 We proceed by induction.
 
