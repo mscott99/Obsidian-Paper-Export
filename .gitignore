@@ -10,3 +10,5 @@
 *.gz
 *.out
 examples/.obsidian/workspace.json
+examples/Obsidian Paper Export.code-workspace
+examples/.obsidian

@@ -3,16 +3,19 @@ include("utils.jl")
 struct State
     parsed_notes::Dict{String,Markdown.MD}
     input_folder::String
+    output_folder::String
     longform_file::String
     metadata::Dict{String,String}
     defined_labels::Vector{String}
     depth::Ref{Int}
     inline::Ref{Bool}
+    img_folder_name::String
+    output_file_name::String
 end
 
-function State(parsed_notes::Dict{String,Markdown.MD}, input_folder::String, longform_file::String, metadata=Dict())
+function State(parsed_notes::Dict{String,Markdown.MD}, input_folder::String, output_folder::String, longform_file::String; img_folder_name="Files", metadata=Dict(), output_file_name="main.tex")
     defined_labels = String[]
-    return State(parsed_notes, input_folder, longform_file, metadata, defined_labels, Ref(0), Ref(false))
+    return State(parsed_notes, input_folder, output_folder, longform_file, metadata, defined_labels, Ref(0), Ref(false), img_folder_name, output_file_name)
 end
 
 function build_latex(state::State; skip_abstract=true)
@@ -120,18 +123,18 @@ convert_to_latex(elem, state::State) = "NOT IMPLEMENTED: $(typeof(elem))"
 convert_to_latex(elem::Markdown.HorizontalRule, state::State) = "\\hrulefill\n"
 
 function convert_to_latex(elem::Union{String,SubString}, state::State)
-    if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.+?\]\])(.*)", elem)) !== nothing
+    if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.+?\]\])(.*)", elem)) |> isnothing |> !
         return handle_embed_link(match_obj[2], match_obj[1], state) * convert_to_latex(match_obj[3], state)
     else
-        latex = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, nothing, state))
-        latex = replace(latex, r"\[\[@.+?\]\]" => s -> "\\cite{$(match(r"\[\[@(.+?)\]\]", s)[1])}")
-        latex = replace(latex, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s, state))
-        return latex
+        elem = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, nothing, state))
+        elem = replace(elem, r"\[\[@.+?\]\]" => s -> "\\cite{$(match(r"\[\[@(.+?)\]\]", s)[1])}")
+        elem = replace(elem, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s, state))
+        return elem
     end
 end
 
 function convert_to_latex(elem::Markdown.LaTeX, state::State)
-    if match(r"\\begin{align", elem.formula) !== nothing
+    if match(r"\\begin{align", elem.formula) |> isnothing |> !
         return "\n" * elem.formula * "\n"
     else
         if state.inline[]
@@ -144,15 +147,16 @@ end
 
 function handle_ref_wikilink(link, state::State)
     link_info = extract_link_info(link)
-    if link_info === nothing
+    if link_info |> isnothing
         @warn "Could not extract link info from $link"
         return link
     end
-    if !isnothing(link_info[:display_name])
+    if link_info[:display_name] |> isnothing |> !
         return "$(link_info[:display_name])\\ref{$(link_info[:file_name])}"
     end
     return "\\autoref{$(link_info[:file_name])}"
 end
+
 
 function handle_embed_link(link, environment, state::State)
     if state.depth[] >= 50
@@ -161,8 +165,25 @@ function handle_embed_link(link, environment, state::State)
     end
 
     link_info = extract_link_info(link)
-    if link_info === nothing
+    if link_info |> isnothing
         return link
+    end
+
+    # Handle figures
+    if occursin(r".+(?:\.png|\.svg|\.jpeg|\.pdf|\.tiff?)", link_info[:file_name])
+        if state.img_folder_name |> isnothing
+            @warn "No img_folder_name specified, dropping the figure"
+            return link
+        end
+        output_img_dir = joinpath(state.output_folder, state.img_folder_name)
+        if !isdir(output_img_dir)
+            mkdir(output_img_dir)
+        end
+        output_img_file = joinpath(output_img_dir, link_info[:file_name])
+        if !isfile(output_img_file)
+            cp(joinpath(state.input_folder, state.img_folder_name, link_info[:file_name]), output_img_file)
+        end
+        return "\n\\begin{figure}[h]\n\\caption{$(link_info[:display_name])}\n\\centering\n\\includegraphics[width=0.5\\textwidth]{$(joinpath("./",state.img_folder_name, link_info[:file_name]))}\n\\end{figure}\n"
     end
 
     file_name = link_info[:file_name] * ".md"
@@ -175,7 +196,7 @@ function handle_embed_link(link, environment, state::State)
     end
 
     embedded_note = state.parsed_notes[file_path]
-    if isnothing(anchor)
+    if anchor |> isnothing
         content = generate_latex(embedded_note, state)
     else
         content = find_heading_content(embedded_note, anchor, state)
@@ -183,7 +204,7 @@ function handle_embed_link(link, environment, state::State)
 
     environment_anchors = Dict("Proof" => "proof", "Statement" => "lemma", "Remarks" => "remark", "Remark" => "remark")
 
-    if isnothing(environment) && anchor in keys(environment_anchors)
+    if environment |> isnothing && anchor in keys(environment_anchors)
         environment = environment_anchors[anchor]
     end
 
@@ -203,7 +224,7 @@ function handle_embed_link(link, environment, state::State)
         displayed_result_name = "[Proof of~{\\autoref{$(link_info[:file_name])}}]"
     end
 
-    if !isnothing(environment)
+    if environment |> isnothing |> !
         push!(state.defined_labels, label_name)
         return "\n\\begin{$(environment)}$displayed_result_name\n\\label{$label_name}\n$content\n\\end{$environment}\n"
     else

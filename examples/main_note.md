@@ -4,6 +4,8 @@ This is a simple example to showcase the Obsidian to LaTeX converter.
 # Introduction
 This document demonstrates the conversion of Markdown notes to a LaTeX document, including internal links and embedded content.
 
+![[download.jpeg|This is the caption]]
+
 # Results
 
 $$

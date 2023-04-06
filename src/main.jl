@@ -1,12 +1,15 @@
 include("obsidian_parser.jl")
 include("latex_builder.jl")
 
-function main(input_folder::String, longform_file::String, output_file::String)
-    metadata = extract_metadata(joinpath(longform_file))
+function main(input_folder::String, longform_file_path::String, output_folder::String; output_file_name::String="output.tex", img_folder_name::String="Files")
+    metadata = extract_metadata(joinpath(longform_file_path))
     parsed_notes = parse_obsidian_folder(joinpath(input_folder))
-    start_state = State(parsed_notes, input_folder, longform_file, metadata)
+    start_state = State(parsed_notes, input_folder, output_folder, longform_file_path;
+        metadata=metadata,
+        img_folder_name=img_folder_name,
+        output_file_name=output_file_name)
     latex = build_latex(start_state)
-    write(output_file, latex)
+    write(joinpath(output_folder, output_file_name), latex)
 end
 
 if length(ARGS) != 3
@@ -14,6 +17,7 @@ if length(ARGS) != 3
 else
     main(args[1], args[2], args[3])
 end
-main("./examples/", "./examples/main_note.md", "./examples/output/output.tex")
+
+main("./examples/", "./examples/main_note.md", "./examples/output/example_output")
 #main("../../myVault/Zettelkasten/", "../../myVault/Zettelkasten/Journal Sample Longform.md", "./examples/output/journal1/Export Journal Output.tex")
-#main("../../myVault/Zettelkasten/", "../../myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./examples/output/uneven_journal/Export Journal Output.tex")
+#main("./myVault/Zettelkasten/", "./myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./export_markdown/Obsidian\ Paper\ Export/examples/output/uneven_journal/"; output_file_name="Uneven Sampling Journal Version.tex", img_folder_name="Files")
