@@ -8,6 +8,13 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 
 # Results
 
+#longform
+
+> a quote; remove it
+>
+
+
+
 $$
 \begin{align*}
   \|\hat x - x_0\|_2

@@ -1,0 +1,341 @@
+\documentclass{article}
+\input{header}
+\input{preamble.sty}
+\addbibresource{bibliography.bib}
+
+\title{../../Ik-Vault/Zettelkasten/Sub-Gaussian McDiarmid Inequality and Classification on the Sphere.md}
+\author{Author}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+We use the sub-Gaussian McDiarmid inequality to quantify the parametric error for binary classification on the sphere. We also include a proof of this inequality, which employs the entropy method.
+
+
+\end{abstract}
+#longform
+
+\section{Introduction}
+\label{section:Introduction}
+#project/toplevel 
+Consider a binary linear classification problem with feature vectors  $X_1, X_2, \dots, X_m \stackrel{\text{iid}}{\sim} \mathrm{Unif}(\mathbb{S}^{n-1})$  and corresponding labels  $Y_i = \mathrm{sign}(\langle w, X_i \rangle)$ , where  $w \in \mathbb{S}^{n-1}$  is fixed. The objective is to estimate  $w$  (or equivalently, learn the linear classifier  $x \mapsto \langle w, \cdot \rangle$ ). Here, we study the statistical properties of the following quantity
+
+\begin{align}
+\widetilde{w} := \frac{1}{m}\sum_{i=1}^m X_i Y_i,
+\end{align}
+which yields the estimator
+
+\begin{align}
+\widehat{w} := \frac{\tilde{w}}{\norm{\bE\tilde{w}}_{2}}.
+\end{align}
+The deviation
+
+\begin{align*}
+\norm{\widetilde{w} - \bE \widetilde{w}}_2 = \normbig{\frac{1}{m}\sum_{i=1}^m X_i Y_i - \bE \widetilde{w}}_2 = \normbig{\frac{1}{m}\sum_{i=1}^m Z_i - \bE Z_1}_2,
+\end{align*}
+where  $Z_i := X_i Y_i$  is now distributed uniformly on a half-sphere, is a well-behaved function of independent random variables. Hence, is amenable to concentration of measure principles. Here, we control the sub-Gaussian norm of this quantity using the  \textit{sub-Gaussian McDiarmid inequality}  \cite{maurerConcentrationInequalitiesSubGaussian2021}.
+
+
+\begin{theorem}[Characterisation of Estimation Error]
+\label{Characterisation of Estimation Error}
+Suppose  $n \in \mathbb{N}$ . Then we have
+
+
+\begin{equation*}
+\mathbb{E}\left[\|\widehat{w}-w\|_2\right] \asymp \sqrt{\frac{n}{m}},
+\end{equation*}
+
+and
+
+
+\begin{equation*}
+\left\lVert \left\lVert \widehat{w} - w \right\rVert_2 - \mathbb{E}\left[\left\lVert \widehat{w} - w \right\rVert_2 \right] \right\rVert_{\psi_2} \lesssim  \frac{1}{\sqrt{ m }}.
+\end{equation*}
+
+
+\end{theorem}
+
+
+\section{Proof of \autoref{Characterisation of Estimation Error}}
+\label{section:Proof of \autoref{Characterisation of Estimation Error}}
+proof::We shall use the notation introduced in \autoref{Sub-Gaussian McDiarmid Inequality and Classification on the Sphere}. Without loss of generality, we may assume  $w = e_1$ . We compute
+
+
+\begin{align*}
+\|\mathbb{E} [\widetilde{w}]\|_2 &= \frac{\int_0^1 y (1-y^2)^{(n-3)/2}dy}{\int_0^1 (1-y^2)^{(n-3)/2} dy}\\
+&= \frac{2 \Gamma(n/2)}{\sqrt{\pi} (n-1) \Gamma((n-1)/2)}\\
+&\asymp \frac{1}{\sqrt{n}}. 
+\end{align*}
+
+We now compute the mean of the deviation  $\|\widetilde{w} -\bE[\widetilde{w}]\|_2$  as Further, we compute the deviation of  $\|\widetilde{w} -\bE[\widetilde{w}]\|_2$  from its mean as
+
+
+\begin{equation*}
+\| \widetilde{w} - \bE[\widetilde{w}]\|_2 = \normbig{\frac{1}{m}\sum_{i=1}^m Z_i - \bE[Z_1]}_2 =: g(Z_1, \dots, Z_m),
+\end{equation*}
+
+where  $Z_1, \dots, Z_m \stackrel{iid}{\sim} Unif(\sphere{n}_+)$ . Let  $i \in [m]$ . Let  $z_1, \dots, z_{i-1}, z_{i+1}, \dots, z_m \in \sphere{n}$  be fixed. Note that  $x \mapsto g(z_1, \dots, z_{i-1}, x, z_{i+1}, \dots, z_m)$   is a Lipschitz function from  $\sphere{n}$  to  $\bR$  with Lipschitz constant  $1/m$  since
+
+
+\begin{equation*}
+|g(z_1, \dots, z_{i-1}, x, z_{i+1}, \dots, z_m) - g(z_1, \dots, z_{i-1}, x', z_{i+1}, \dots, z_m)| \le \frac{1}{m}\left\|x-x'\right\|_2
+\end{equation*}
+
+by the reverse triangle inequality. Then it follows from \autoref{Concentration on the Half-Sphere} that
+
+
+\begin{equation*}
+\normbig{g(z_1, \dots, z_{i-1}, Z_i, z_{i+1}, \dots, z_m) - \bE[g(z_1, \dots, z_{i-1}, Z_i, z_{i+1}, \dots, z_m)]}_{\psi_2} \lesssim \frac{1}{m\sqrt{n}}.
+\end{equation*}
+
+Finally, it follows from \autoref{Sub-Gaussian McDiarmid} that
+
+
+\begin{equation*}
+\|\| \widetilde{w} - \bE[\widetilde{w}]\|_2 - \bE[\| \widetilde{w} - \bE\left[\widetilde{w}]\|_2\right]\|_{\psi_2}= \|g(Z_1,\dots,Z_m) - \bE[g(Z_1,\dots,Z_m)]\|_{\psi_2} \lesssim \frac{1}{\sqrt{mn}}.
+\end{equation*}
+
+The final result now follows by combining the above estimate with the estimates on  $\|\bE[\widetilde{w}]\|_2$  and  $\|\widetilde{w} - \bE[\widetilde{w}]\|_2$  proved before.
+
+
+proof::Uses \autoref{Concentration on the Half-Sphere} together with \autoref{Norm of Addition is Lipschitz}. From this we are done.
+
+
+
+\section{Proof of \autoref{Sub-Gaussian McDiarmid}}
+\label{section:Proof of \autoref{Sub-Gaussian McDiarmid}}
+proof::Let  $Z := f(X_1, \dots, X_m) - \bE f(X_1, \dots, X_m)$ , and consider its log moment generating function  $\psi(\lambda) = \log \bE e^{\lambda Z}$ , for  $\lambda \in \bR$ . All we need to show is that  $\psi(\lambda) \leq \frac{mK^2\lambda^2}{2}$  so that by definition of sub-Gaussian random variables, we are done. In fact, it suffices to prove this for  $\lambda \geq 0$ , because the case  $\lambda < 0$  then follows by repeating the argument for  $-Z$ .
+
+The proof we present here uses the  \textit{entropy method}  (see \cite{boucheronConcentrationInequalitiesNonasymptotic2016}, \cite{wainwrightHighDimensionalStatisticsNonAsymptotic2019}).  definition:: For a non-negative random variable  $W$ , and the convex function  $\phi(w) = w\log w$ , define the  $\phi$ -entropy of  $W$  as
+
+
+\begin{equation*}
+Ent(W) = \bE\,\phi(W) - \phi\left(\bE W\right)
+\end{equation*}
+
+ This quantity is well defined when both  
+\begin{equation*}
+W
+\end{equation*}
+  and  
+\begin{equation*}
+\phi(W)
+\end{equation*}
+  have finite expectations. Some basic properties of the entropy are provided in the appendix.
+
+First, we bound the cumulant generating function by a function of the entropy.
+
+
+\begin{lemma}[Herbst's Argument]
+\label{Herbst's Argument}
+To bound the cumulant generating function it suffices to bound the entropy. Specifically,
+
+
+\begin{equation*}
+\psi(\lambda) =\lambda \int_0^\lambda  \frac{Ent(e^{tZ})}{\varphi(t)t^2}  \, dt.
+\end{equation*}
+
+
+\end{lemma}
+ Notice that if  
+\begin{equation*}
+Ent(e^{tZ}) \leq cmK^2 t^2 \varphi(t)
+\end{equation*}
+ , then it follows that
+
+
+\begin{equation*}
+\frac{\psi(\lambda)}{\lambda} \leq \int _0^\lambda cK^2 \frac{t^2}{t^2} \, dt = cK^2 \lambda^2
+\end{equation*}
+
+
+\begin{equation*}
+\implies \psi(\lambda) \leq cmK^2 \lambda^2.
+\end{equation*}
+
+and from this the statement follows. Therefore we need only bound the entropy.
+
+Let us first define some notation for the conditioning of random variables: let  $Z_i := \mathbb{E}[Z |X_1, \dots, X_i]$  and let  $Z^{(i)}:= \mathbb{E}[Z|X_1, \dots, X_{i-1}, X_{i+1}, \dots, X_m]$ .
+
+We employ a standard method to bound the entropy: the so-called tensorization of entropy\ref{Tensorization of Entropy}. lemma::Define  $W = g(X_1, \dots, X_m)$ , then
+
+
+\begin{equation*}
+Ent(W) \leq \mathbb{E} \sum_{i=1}^m Ent^{(i)}(W)
+\end{equation*}
+
+where  $Ent^{(i)}(W) = \mathbb{E}^{(i)}[W \log W] - \mathbb{E}^{(i)}W \log \mathbb{E}^{(i)}W$ .
+
+ From this lemma we find that
+
+
+\begin{equation*}
+Ent(e^{-tZ}) \leq \sum_{i=1}^m \mathbb{E} Ent^{(i)}(e^{-tZ}).
+\end{equation*}
+
+We now bound  $Ent^{(i)}(e^{tZ})$ . Fix  $X_1, \dots, X_{i-1}, X_{i+1},\dots, X_m$ . Then notice that bounding  $Ent^{(i)}(e^{(-tZ)})$  reduces to bounding the entropy of a one-dimensional sub-gaussian random variable. The sub-Gaussianity in this setting is given by assumptions in the statement.
+
+We bound this in the following lemma. lemma::Let  $Z$  be a sub-Gaussian random variable with norm  $K$ . Then
+
+
+\begin{equation*}
+Ent(e^{tZ}) \leq CK^2 t^2 \varphi(t).
+\end{equation*}
+
+ We can now complete the proof. We write
+
+
+\begin{align*}
+\frac{Ent(e^{tZ})}{\varphi(t)} &\leq \frac{\mathbb{E}\sum_{i=1}^m Ent^{(i)}(e^{tZ})}{\varphi(t)}\\
+& \leq \mathbb{E} \sum_{i=1}^m \frac{CK^2t^2\mathbb{E}^{(i)}e^{Zt}}{\varphi(t)} \\
+& \leq CmK^2 t^2
+\end{align*}
+
+and as argued above, we then have
+
+
+\begin{equation*}
+\psi(\lambda) \leq c m K^2 \lambda^2
+\end{equation*}
+
+and therefore  $Z$  is sub-gaussian with norm  $K \sqrt{ m }$ .
+
+ We now show the three lemmas that where used in the proof in order of appearance. proof::Observe that
+
+
+\begin{equation*}
+\frac{\psi(\lambda)}{\lambda} = \int_0^\lambda \frac{d}{dt} \frac{\psi(t)}{t} \, dt = \int_0^\lambda  \frac{Ent(e^{tZ})}{\varphi(t)t^2}  \, dt.
+\end{equation*}
+
+Indeed, this follows from computing the derivative of  $\frac{\psi(t)}{t}$ .
+
+
+\begin{align*}
+\frac{d}{dt} \frac{\psi(t)}{t} &= \frac{\psi'(t)t - \psi(t)}{t^2}\\
+&= \frac{\left( \frac{\mathbb{E}[Ze^{tZ}]}{\varphi(t)}t - \frac{\varphi(t)\psi(t)}{\varphi(t)} \right)}{t^2}\\
+&= \frac{\mathbb{E}[tZe^{tZ}] - \mathbb{E}[e^{tZ}] \log \mathbb{E}[e^{tZ}]}{t\varphi(t)} \\
+&= \frac{Ent(e^{tZ})}{t^2 \varphi(t)}\\
+\end{align*}
+
+ To show the \autoref{Tensorization of Entropy}, we will need the following result. lemma::Given a random variable  $Y$ ,
+
+
+\begin{equation*}
+Ent(Y) = \sup_{U: \mathbb{E} e^U \leq 1}\mathbb{E}[UY].
+\end{equation*}
+
+and furthermore, if we have a random variable  $U$  such that  $\mathbb{E}[UY] \leq Ent(Y)$  for any r.v.  $Y$ , then  $\mathbb{E}e^U\leq 1$ .
+
+ proof::Consider
+
+
+\begin{equation*}
+Ent_{e^{U}P}[e^{-U}Y]
+\end{equation*}
+
+and notice we can compute that
+
+
+\begin{equation*}
+Ent_{e^{U}P}[e^{-U}Y] = Ent(Y) - \mathbb{E}[UY].
+\end{equation*}
+
+Then the proof follows from the fact that
+
+
+\begin{equation*}
+Ent_{e^{U}P}[e^{-U}Y] \geq 0
+\end{equation*}
+
+with equality when the random variable is constant, i.e. when  $e^{-U} = \frac{\mathbb{E}y}{Y}$  which yields a valid  $U$ , and so the inequality is attained for some  $U$ .
+
+ proof::First we need lemma::Given a random variable  $Y$ ,
+
+
+\begin{equation*}
+Ent(Y) = \sup_{U: \mathbb{E} e^U \leq 1}\mathbb{E}[UY].
+\end{equation*}
+
+and furthermore, if we have a random variable  $U$  such that  $\mathbb{E}[UY] \leq Ent(Y)$  for any r.v.  $Y$ , then  $\mathbb{E}e^U\leq 1$ .
+
+ Define  $W_i := \mathbb{E}[W| X_1, \dots, X_i]$ . Then
+
+
+\begin{align*}
+Ent(W) &= \mathbb{E}\left[ W (\log W - \log \mathbb{E}W) \right]\\
+& = \mathbb{E}\left[ W \sum_{i=1}^m (\log W_i - \log\mathbb{E}^{(i)} W_i) \right]\\
+& = \mathbb{E} \sum_{i=1}^m \mathbb{E}^{(i)}[W (\log W_i - \log \mathbb{E}^{(i)} W_i)]\\
+& \leq \mathbb{E} \sum_{i=1}^m Ent^{(i)}(W)
+\end{align*}
+
+
+proof::Suppose  $\bE Z = 0$  first, and let  $P = \mathrm{Law}(Z)$ . For  $t\in \bR$ , consider the exponentially tilted measure  $dP^{(t)} = \frac{e^{tZ}}{\bE e^{tZ}} dP$ . Then,
+
+
+\begin{align*}
+\frac{Ent(e^{tz})}{\varphi(t)} &= \frac{\mathbb{E}[e^{tZ}tZ]}{\varphi(t)} - \frac{\varphi(t)\log \mathbb{E}e^{tZ}}{\varphi(t)} \\
+& = \mathbb{E}_{P^{(t)}}[tZ] - \psi(t) \\
+& = \mathbb{E}_{P^{(t)}} \log e^{tZ} - \psi(t) \\
+& \leq \log \mathbb{E}_{P^{(t)}} [e^{tZ}] - \psi(t) \\
+& = \log \mathbb{E} e^{2tZ} - 2 \psi(t) \\
+& \leq \log \mathbb{E} e^{2tZ} \\
+& \leq CK^2t^2
+\end{align*}
+
+This also holds for random variables of mean non-zero. Indeed,
+
+
+\begin{equation*}
+\frac{Ent(e^{tZ + C})}{\mathbb{E}[e^{tZ + C}]} = \frac{\mathbb{E}[e^C]}{\mathbb{E}[e^C]} \frac{Ent(e^{tZ})}{\varphi(t)} \leq CK^2t^2.
+\end{equation*}
+
+We were able to remove the negative term since  $\psi(t) \geq 0$  because one can notice that for t  $\geq 0$ ,
+
+
+\begin{equation*}
+-\psi(t) = -\log(\mathbb{E}e^{Zt}) \leq - \mathbb{E}[Zt] \leq -t \leq 0.
+\end{equation*}
+
+
+
+\section{Appendix}
+\label{section:Appendix}
+Here, we prove some basic properties of the entropy functional, and state its relationship with the Kullback-Leibler divergence. theorem::Let  $W\geq 0$  be any random variable with  $\bE W < \infty$  and  $\bE\, \phi(W)<\infty$ . 
+
+\begin{itemize}
+\item NOT IMPLEMENTED: Vector{Any}
+\item NOT IMPLEMENTED: Vector{Any}
+\item NOT IMPLEMENTED: Vector{Any}\end{itemize}
+ proof::(1) follows directly from the convexity of  $\phi(w) = w \log w$  by Jensen's inequality. To prove (2), suppose  $W = c$  almost surely. Then  $\bE\phi(W) = \bE \phi(c) = \phi(c) = \phi(\bE W)$ , giving that  $Ent(W)=0$ . (3) follows from direct computation as
+
+
+\begin{align*}
+Ent(aW) &= \bE[aW \log aW] - \bE(aW)\log (\bE aW)\\
+&= a\left\{ \bE[W\log W] + (\bE W)\log a - \bE(W)\log (\bE W) - (\bE W)\log a \right\} \\
+&= a\,Ent(W).
+\end{align*}
+
+ The entropy functional is related to the usual Kullback-Leibler divergence of appropriately constructed measures. Suppose  $P = \mathrm{Law}(X_1, \dots, X_m)$  and let  $W^{(\lambda)} = e^{\lambda g(X_1, \dots, X_m)}$  for  $\lambda \in \bR$ . 
+\section{Statement}
+\label{section:Statement}
+Define the corresponding  \textit{tilted}  measure defined by the density
+
+\begin{equation*}
+\frac{dP^{(\lambda)}}{dP} = \frac{e^{\lambda g(X_1, \dots, X_m)}}{\bE\,e^{\lambda g(X_1, \dots, X_m)}}.
+\end{equation*}
+ Then,
+
+
+\begin{align*}
+D_{\mathrm{KL}}(P^{(\lambda)}||P) &= \bE\left[\frac{dP^{(\lambda)}}{dP} \log \frac{dP^{(\lambda)}}{dP}\right] \\
+&= \bE\left[\frac{dP^{(\lambda)}}{dP} \log \frac{dP^{(\lambda)}}{dP}\right] - \bE\left[\frac{dP^{(\lambda)}}{dP}\right]\log \bE \left[\frac{dP^{(\lambda)}}{dP}\right]\\
+&= Ent\left(\frac{dP^{(\lambda)}}{dP}\right)\\
+&= \frac{1}{\bE\,e^{\lambda g(X_1, \dots, X_m)}}\, Ent\left(e^{\lambda g(X_1, \dots, X_m)}\right).
+\end{align*}
+
+where the second equality is due to the fact that  $\bE  \left[ \frac{dP^{(\lambda)}}{dP} \right] = 1$ , and the last inequality follows from the positive homogeneity of entropy.
+
+
+
+\printbibliography
+\end{document}

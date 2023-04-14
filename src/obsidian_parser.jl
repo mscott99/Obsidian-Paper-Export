@@ -4,7 +4,8 @@ using YAML
 
 function parse_obsidian_file(file_path::String)
     mdlines = readlines(file_path)
-    if mdlines[1] == "---"
+    # Check for YAML header
+    if length(mdlines) > 0 && mdlines[1] == "---"
         dash_lines = findall(x -> x == "---", mdlines)
         md = join(mdlines[findall(x -> x == "---", mdlines)[2]+1:end], "\n")
     else

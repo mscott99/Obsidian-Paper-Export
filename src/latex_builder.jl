@@ -126,6 +126,8 @@ function convert_to_latex(elem::Union{String,SubString}, state::State)
     if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.+?\]\])(.*)", elem)) |> isnothing |> !
         return handle_embed_link(match_obj[2], match_obj[1], state) * convert_to_latex(match_obj[3], state)
     else
+        #elem = replace(elem, r"#[^ ]*" => "") # remove hashtags
+        # remove hashtags
         elem = replace(elem, r"!\[\[.+?\]\]" => s -> handle_embed_link(s, nothing, state))
         elem = replace(elem, r"\[\[@.+?\]\]" => s -> "\\cite{$(match(r"\[\[@(.+?)\]\]", s)[1])}")
         elem = replace(elem, r"\[\[.+?\]\]" => s -> handle_ref_wikilink(s, state))

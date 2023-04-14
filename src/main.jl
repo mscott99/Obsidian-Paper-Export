@@ -18,6 +18,7 @@ else
     main(args[1], args[2], args[3])
 end
 
-main("./examples/", "./examples/main_note.md", "./examples/output/example_output")
+main("../../Ik-Vault/Zettelkasten/", "../../Ik-Vault/Zettelkasten/Sub-Gaussian McDiarmid Inequality and Classification on the Sphere.md", "./examples/output/project555_output"; output_file_name="main.tex")
+#main("./examples/", "./examples/main_note.md", "./examples/output/example_output")
 #main("../../myVault/Zettelkasten/", "../../myVault/Zettelkasten/Journal Sample Longform.md", "./examples/output/journal1/Export Journal Output.tex")
 #main("./myVault/Zettelkasten/", "./myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./export_markdown/Obsidian\ Paper\ Export/examples/output/uneven_journal/"; output_file_name="Uneven Sampling Journal Version.tex", img_folder_name="Files")
