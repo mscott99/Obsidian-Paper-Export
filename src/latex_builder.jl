@@ -202,16 +202,16 @@ function handle_embed_link(link, environment, state::State)
         content = find_heading_content(embedded_note, anchor, state)
     end
 
-    environment_anchors = Dict("Proof" => "proof", "Statement" => "lemma", "Remarks" => "remark", "Remark" => "remark")
-
-    if environment |> isnothing && anchor in keys(environment_anchors)
-        environment = environment_anchors[anchor]
+    if environment |> isnothing
+        return content
     end
 
+    # Process environment
     label_name = link_info[:file_name]
     if environment in ("remark", "proof")
         label_name = "$environment:" * label_name
     end
+
     if label_name in state.defined_labels
         @warn "Label $label_name already defined, replacing with a reference"
         return "\\autoref{$label_name}"
