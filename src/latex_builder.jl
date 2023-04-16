@@ -39,8 +39,7 @@ function build_latex(state::State; skip_abstract=true)
 \\begin{document}
 \\maketitle
 \\begin{abstract}
-$abstract
-\\end{abstract}
+$abstract\\end{abstract}
 $latex_body
 \\printbibliography
 \\end{document}
@@ -124,6 +123,7 @@ convert_to_latex(elem::Markdown.HorizontalRule, state::State) = "\\hrulefill\n"
 
 function convert_to_latex(elem::Union{String,SubString}, state::State)
     if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark)::(!?\[\[.+?\]\])(.*)", elem)) |> isnothing |> !
+    if (match_obj = match(r"^(lemma|theorem|corollary|definition|remark|proof)::(!?\[\[.+?\]\])(.*)", elem)) !== nothing
         return handle_embed_link(match_obj[2], match_obj[1], state) * convert_to_latex(match_obj[3], state)
     else
         #elem = replace(elem, r"#[^ ]*" => "") # remove hashtags
@@ -138,11 +138,13 @@ end
 function convert_to_latex(elem::Markdown.LaTeX, state::State)
     if match(r"\\begin{align", elem.formula) |> isnothing |> !
         return "\n" * elem.formula * "\n"
+    if match(r"\\begin{align", elem.formula) !== nothing
+        return elem.formula * "\n"
     else
         if state.inline[]
             return "\$" * elem.formula * "\$"
         else
-            return "\n\\begin{equation*}\n" * strip(elem.formula, '\n') * "\n\\end{equation*}\n"
+            return "\\begin{equation*}\n" * strip(elem.formula, '\n') * "\n\\end{equation*}\n"
         end
     end
 end
@@ -258,7 +260,7 @@ function find_heading_content(note::Markdown.MD, target_heading, state; include_
 
         if found_heading
             state.inline[] = false
-            content *= convert_to_latex(elem, state) * "\n"
+            content *= convert_to_latex(elem, state)
         end
     end
 

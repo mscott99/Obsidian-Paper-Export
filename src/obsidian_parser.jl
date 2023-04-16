@@ -14,7 +14,6 @@ function parse_obsidian_file(file_path::String)
     #md = join(mdlines[findall(x -> x == "---", mdlines)[2]+1:end], "\n")
     #content = md
     #content = read(file_path, String)
-
     #pre_processed = replace(md, r"\$\$\n(.+?)\n\$\$" => s -> "\$\$$(match(r"\$\$\n(.+?)\n\$\$",s)[1])\$\$")
     process_eq(eq) = replace(eq, r"\n+" => "\n") # remove newlines
     pre_processed = replace(md, r"\$\$(?:\s|\n)*(.|\n)+?(?:\s|\n)*\$\$" => s -> "```math\n$(process_eq(match(r"\$\$(?:\s|\n)*((?:.|\n)+?)(?:\s|\n)*\$\$", s)[1]))\n```")

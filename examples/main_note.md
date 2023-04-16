@@ -22,7 +22,7 @@ $$
 \end{align*}
 $$
 
-Here is some $\sum a_i$.
+Here is some $\sum a_i$. Reference: [[lemma_1#Proof]].
 
 ```math
 \sum_{i=1}^k A_i
