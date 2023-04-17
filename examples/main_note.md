@@ -1,3 +1,6 @@
+---
+author: Matthew Scott
+---
 # Abstract
 This is a simple example to showcase the Obsidian to LaTeX converter.
 

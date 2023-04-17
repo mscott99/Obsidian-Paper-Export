@@ -36,6 +36,29 @@ The deviation
 where  $Z_i := X_i Y_i$  is now distributed uniformly on a half-sphere, is a well-behaved function of independent random variables. Hence, is amenable to concentration of measure principles. Here, we control the sub-Gaussian norm of this quantity using the  \textit{sub-Gaussian McDiarmid inequality}  \cite{maurerConcentrationInequalitiesSubGaussian2021}.
 
 
+<<<<<<< Updated upstream
+=======
+\begin{theorem}[Sub-Gaussian McDiarmid]
+\label{Sub-Gaussian McDiarmid}
+Given  $f:\mathcal{X}^m \to \mathbb{R}$  and random variables  $\{ X_i \}_{i \in [m]}$ , suppose that  $\forall i \in [m]$ ,
+
+
+\begin{equation*}
+\lVert  f(X_1, \dots, X_m) - \mathbb{E}f(X_1, \dots, X_m)\rVert_{\psi_2|X^{(i)}} \leq K \quad a.s.
+\end{equation*}
+
+Then
+
+
+\begin{equation*}
+\lVert f(X_1, \dots, X_m) - \mathbb{E}f(X_1, \dots, X_m)\rVert_{\psi_2} \le K\sqrt{m}.
+\end{equation*}
+
+
+\end{theorem}
+
+
+>>>>>>> Stashed changes
 \begin{theorem}[Characterisation of Estimation Error]
 \label{Characterisation of Estimation Error}
 Suppose  $n \in \mathbb{N}$ . Then we have
@@ -58,7 +81,14 @@ and
 
 \section{Proof of \autoref{Characterisation of Estimation Error}}
 \label{section:Proof of \autoref{Characterisation of Estimation Error}}
+<<<<<<< Updated upstream
 proof::We shall use the notation introduced in \autoref{Sub-Gaussian McDiarmid Inequality and Classification on the Sphere}. Without loss of generality, we may assume  $w = e_1$ . We compute
+=======
+proof::
+\begin{proof}[Proof of~{\autoref{Characterisation of Estimation Error}}]
+\label{proof:Characterisation of Estimation Error}
+We shall use the notation introduced in \autoref{Sub-Gaussian McDiarmid Inequality and Classification on the Sphere}. Without loss of generality, we may assume  $w = e_1$ . We compute
+>>>>>>> Stashed changes
 
 
 \begin{align*}
@@ -81,7 +111,23 @@ where  $Z_1, \dots, Z_m \stackrel{iid}{\sim} Unif(\sphere{n}_+)$ . Let  $i \in [
 |g(z_1, \dots, z_{i-1}, x, z_{i+1}, \dots, z_m) - g(z_1, \dots, z_{i-1}, x', z_{i+1}, \dots, z_m)| \le \frac{1}{m}\left\|x-x'\right\|_2
 \end{equation*}
 
+<<<<<<< Updated upstream
 by the reverse triangle inequality. Then it follows from \autoref{Concentration on the Half-Sphere} that
+=======
+by the reverse triangle inequality. Now consider the following lemma. 
+\begin{lemma}[Concentration on the Half-Sphere]
+\label{Concentration on the Half-Sphere}
+For any lipschitz function  $f:\sphere{n}_+ \to \mathbb{R}$  with Lipschitz constant  $L$  and a random vector  $X$  distributed uniformly on  $\sphere{n}_+$ , we have
+
+
+\begin{equation*}
+\lVert f(X)-\mathbb{E}[f(X)]\rVert_{\psi_2} \lesssim \frac{L}{\sqrt{n}}.
+\end{equation*}
+
+
+\end{lemma}
+  It follows that
+>>>>>>> Stashed changes
 
 
 \begin{equation*}
@@ -98,6 +144,7 @@ Finally, it follows from \autoref{Sub-Gaussian McDiarmid} that
 The final result now follows by combining the above estimate with the estimates on  $\|\bE[\widetilde{w}]\|_2$  and  $\|\widetilde{w} - \bE[\widetilde{w}]\|_2$  proved before.
 
 
+<<<<<<< Updated upstream
 proof::Uses \autoref{Concentration on the Half-Sphere} together with \autoref{Norm of Addition is Lipschitz}. From this we are done.
 
 
@@ -105,6 +152,69 @@ proof::Uses \autoref{Concentration on the Half-Sphere} together with \autoref{No
 \section{Proof of \autoref{Sub-Gaussian McDiarmid}}
 \label{section:Proof of \autoref{Sub-Gaussian McDiarmid}}
 proof::Let  $Z := f(X_1, \dots, X_m) - \bE f(X_1, \dots, X_m)$ , and consider its log moment generating function  $\psi(\lambda) = \log \bE e^{\lambda Z}$ , for  $\lambda \in \bR$ . All we need to show is that  $\psi(\lambda) \leq \frac{mK^2\lambda^2}{2}$  so that by definition of sub-Gaussian random variables, we are done. In fact, it suffices to prove this for  $\lambda \geq 0$ , because the case  $\lambda < 0$  then follows by repeating the argument for  $-Z$ .
+=======
+\end{proof}
+ 
+\begin{proof}[Proof of~{\autoref{Concentration on the Half-Sphere}}]
+\label{proof:Concentration on the Half-Sphere}
+Let  $\widetilde{X}$  be a random vector defined as
+
+
+\begin{equation*}
+\widetilde{X} = BX + (1-B) \gamma(X),
+\end{equation*}
+
+where  $B \sim Ber\left( \frac{1}{2} \right)$  and  $\gamma$  denotes reflection in the hyperplane  $x_1 = 0$ . Note that  $\widetilde{X}$  is distributed uniformly on  $\sphere{n}$ . We define  $\widetilde{f}: \sphere{n} \to \bR$  as
+
+
+\begin{equation*}
+\widetilde{f}(x) = f(\widetilde{\gamma}(x)),
+\end{equation*}
+
+where
+
+
+\begin{equation*}
+\widetilde{\gamma}(x) = \begin{cases}
+x, & x \in \sphere{n}_+, \\
+\gamma(x),  & \text{otherwise}.
+\end{cases}
+\end{equation*}
+
+Note that  $\widetilde{f}$   is also  $L$ -Lipschitz since
+
+
+\begin{equation*}
+\|\widetilde{\gamma}(x_1) - \widetilde{\gamma}(x_2)\|_2 \le \|x_1 - x_2\|_2,
+\end{equation*}
+
+which implies
+
+
+\begin{equation*}
+\left|\widetilde{f}(x_1) - \widetilde{f}(x_2)\right| = \left|f(\widetilde{\gamma}(x_1)) - f(\widetilde{\gamma}(x_2))\right|  \le L \norm{\widetilde{\gamma}(x_1) - \widetilde{\gamma}(x_2)}_2 \le L\|x_1 - x_2\|_2.
+\end{equation*}
+
+Then it follows from concentration of Lipschitz functions on the sphere that
+
+
+\begin{equation*}
+\normbig{\widetilde{f}(\widetilde{X}) - \mathbb{E}\left[\widetilde{f}(\widetilde{X})\right]}_{\psi_2} \lesssim \frac{L}{\sqrt{n}}.
+\end{equation*}
+
+Finally, observing that  $\widetilde{f}(\widetilde{X})=f(X)$  yields the desired result.
+
+
+\end{proof}
+
+
+\section{Proof of \autoref{Sub-Gaussian McDiarmid}}
+\label{section:Proof of \autoref{Sub-Gaussian McDiarmid}}
+proof::
+\begin{proof}[Proof of~{\autoref{Sub-Gaussian McDiarmid}}]
+\label{proof:Sub-Gaussian McDiarmid}
+Let  $Z := f(X_1, \dots, X_m) - \bE f(X_1, \dots, X_m)$ , and consider its log moment generating function  $\psi(\lambda) = \log \bE e^{\lambda Z}$ , for  $\lambda \in \bR$ . All we need to show is that  $\psi(\lambda) \leq \frac{mK^2\lambda^2}{2}$  so that by definition of sub-Gaussian random variables, we are done. In fact, it suffices to prove this for  $\lambda \geq 0$ , because the case  $\lambda < 0$  then follows by repeating the argument for  $-Z$ .
+>>>>>>> Stashed changes
 
 The proof we present here uses the  \textit{entropy method}  (see \cite{boucheronConcentrationInequalitiesNonasymptotic2016}, \cite{wainwrightHighDimensionalStatisticsNonAsymptotic2019}).  definition:: For a non-negative random variable  $W$ , and the convex function  $\phi(w) = w\log w$ , define the  $\phi$ -entropy of  $W$  as
 
@@ -157,7 +267,14 @@ and from this the statement follows. Therefore we need only bound the entropy.
 
 Let us first define some notation for the conditioning of random variables: let  $Z_i := \mathbb{E}[Z |X_1, \dots, X_i]$  and let  $Z^{(i)}:= \mathbb{E}[Z|X_1, \dots, X_{i-1}, X_{i+1}, \dots, X_m]$ .
 
+<<<<<<< Updated upstream
 We employ a standard method to bound the entropy: the so-called tensorization of entropy\ref{Tensorization of Entropy}. lemma::Define  $W = g(X_1, \dots, X_m)$ , then
+=======
+We employ a standard method to bound the entropy: the so-called tensorization of entropy\ref{Tensorization of Entropy}. lemma::
+\begin{lemma}[Tensorization of Entropy]
+\label{Tensorization of Entropy}
+Define  $W = g(X_1, \dots, X_m)$ , then
+>>>>>>> Stashed changes
 
 
 \begin{equation*}
@@ -166,6 +283,11 @@ Ent(W) \leq \mathbb{E} \sum_{i=1}^m Ent^{(i)}(W)
 
 where  $Ent^{(i)}(W) = \mathbb{E}^{(i)}[W \log W] - \mathbb{E}^{(i)}W \log \mathbb{E}^{(i)}W$ .
 
+<<<<<<< Updated upstream
+=======
+
+\end{lemma}
+>>>>>>> Stashed changes
  From this lemma we find that
 
 
@@ -175,13 +297,25 @@ Ent(e^{-tZ}) \leq \sum_{i=1}^m \mathbb{E} Ent^{(i)}(e^{-tZ}).
 
 We now bound  $Ent^{(i)}(e^{tZ})$ . Fix  $X_1, \dots, X_{i-1}, X_{i+1},\dots, X_m$ . Then notice that bounding  $Ent^{(i)}(e^{(-tZ)})$  reduces to bounding the entropy of a one-dimensional sub-gaussian random variable. The sub-Gaussianity in this setting is given by assumptions in the statement.
 
+<<<<<<< Updated upstream
 We bound this in the following lemma. lemma::Let  $Z$  be a sub-Gaussian random variable with norm  $K$ . Then
+=======
+We bound this in the following lemma. lemma::
+\begin{lemma}[Bounding the Entropy of a Sub-Gaussian Random Variable]
+\label{Bounding the Entropy of a Sub-Gaussian Random Variable}
+Let  $Z$  be a sub-Gaussian random variable with norm  $K$ . Then
+>>>>>>> Stashed changes
 
 
 \begin{equation*}
 Ent(e^{tZ}) \leq CK^2 t^2 \varphi(t).
 \end{equation*}
 
+<<<<<<< Updated upstream
+=======
+
+\end{lemma}
+>>>>>>> Stashed changes
  We can now complete the proof. We write
 
 
@@ -200,7 +334,18 @@ and as argued above, we then have
 
 and therefore  $Z$  is sub-gaussian with norm  $K \sqrt{ m }$ .
 
+<<<<<<< Updated upstream
  We now show the three lemmas that where used in the proof in order of appearance. proof::Observe that
+=======
+
+\end{proof}
+
+We now show the three lemmas that where used in the proof in order of appearance.
+proof::
+\begin{proof}[Proof of~{\autoref{Herbst's Argument}}]
+\label{proof:Herbst's Argument}
+Observe that
+>>>>>>> Stashed changes
 
 
 \begin{equation*}
@@ -217,7 +362,18 @@ Indeed, this follows from computing the derivative of  $\frac{\psi(t)}{t}$ .
 &= \frac{Ent(e^{tZ})}{t^2 \varphi(t)}\\
 \end{align*}
 
+<<<<<<< Updated upstream
  To show the \autoref{Tensorization of Entropy}, we will need the following result. lemma::Given a random variable  $Y$ ,
+=======
+
+\end{proof}
+
+To show the \autoref{Tensorization of Entropy}, we will need the following result.
+
+\begin{lemma}[Duality of Entropy]
+\label{Duality of Entropy}
+Given a random variable  $Y$ ,
+>>>>>>> Stashed changes
 
 
 \begin{equation*}
@@ -226,7 +382,17 @@ Ent(Y) = \sup_{U: \mathbb{E} e^U \leq 1}\mathbb{E}[UY].
 
 and furthermore, if we have a random variable  $U$  such that  $\mathbb{E}[UY] \leq Ent(Y)$  for any r.v.  $Y$ , then  $\mathbb{E}e^U\leq 1$ .
 
+<<<<<<< Updated upstream
  proof::Consider
+=======
+
+\end{lemma}
+
+proof::
+\begin{proof}[Proof of~{\autoref{Duality of Entropy}}]
+\label{proof:Duality of Entropy}
+Consider
+>>>>>>> Stashed changes
 
 
 \begin{equation*}
@@ -249,6 +415,7 @@ Ent_{e^{U}P}[e^{-U}Y] \geq 0
 
 with equality when the random variable is constant, i.e. when  $e^{-U} = \frac{\mathbb{E}y}{Y}$  which yields a valid  $U$ , and so the inequality is attained for some  $U$ .
 
+<<<<<<< Updated upstream
  proof::First we need lemma::Given a random variable  $Y$ ,
 
 
@@ -259,6 +426,15 @@ Ent(Y) = \sup_{U: \mathbb{E} e^U \leq 1}\mathbb{E}[UY].
 and furthermore, if we have a random variable  $U$  such that  $\mathbb{E}[UY] \leq Ent(Y)$  for any r.v.  $Y$ , then  $\mathbb{E}e^U\leq 1$ .
 
  Define  $W_i := \mathbb{E}[W| X_1, \dots, X_i]$ . Then
+=======
+
+\end{proof}
+
+proof::
+\begin{proof}[Proof of~{\autoref{Tensorization of Entropy}}]
+\label{proof:Tensorization of Entropy}
+First we need lemma::\autoref{Duality of Entropy} Define  $W_i := \mathbb{E}[W| X_1, \dots, X_i]$ . Then
+>>>>>>> Stashed changes
 
 
 \begin{align*}
@@ -269,7 +445,16 @@ Ent(W) &= \mathbb{E}\left[ W (\log W - \log \mathbb{E}W) \right]\\
 \end{align*}
 
 
+<<<<<<< Updated upstream
 proof::Suppose  $\bE Z = 0$  first, and let  $P = \mathrm{Law}(Z)$ . For  $t\in \bR$ , consider the exponentially tilted measure  $dP^{(t)} = \frac{e^{tZ}}{\bE e^{tZ}} dP$ . Then,
+=======
+\end{proof}
+
+proof::
+\begin{proof}[Proof of~{\autoref{Bounding the Entropy of a Sub-Gaussian Random Variable}}]
+\label{proof:Bounding the Entropy of a Sub-Gaussian Random Variable}
+Suppose  $\bE Z = 0$  first, and let  $P = \mathrm{Law}(Z)$ . For  $t\in \bR$ , consider the exponentially tilted measure  $dP^{(t)} = \frac{e^{tZ}}{\bE e^{tZ}} dP$ . Then,
+>>>>>>> Stashed changes
 
 
 \begin{align*}
@@ -297,16 +482,39 @@ We were able to remove the negative term since  $\psi(t) \geq 0$  because one ca
 \end{equation*}
 
 
+<<<<<<< Updated upstream
 
 \section{Appendix}
 \label{section:Appendix}
 Here, we prove some basic properties of the entropy functional, and state its relationship with the Kullback-Leibler divergence. theorem::Let  $W\geq 0$  be any random variable with  $\bE W < \infty$  and  $\bE\, \phi(W)<\infty$ . 
+=======
+\end{proof}
+
+
+\section{Appendix}
+\label{section:Appendix}
+Here, we prove some basic properties of the entropy functional, and state its relationship with the Kullback-Leibler divergence.
+
+\begin{theorem}[Definition of entropy]
+\label{Definition of entropy}
+Let  $W\geq 0$  be any random variable with  $\bE W < \infty$  and  $\bE\, \phi(W)<\infty$ . 
+>>>>>>> Stashed changes
 
 \begin{itemize}
 \item NOT IMPLEMENTED: Vector{Any}
 \item NOT IMPLEMENTED: Vector{Any}
 \item NOT IMPLEMENTED: Vector{Any}\end{itemize}
+<<<<<<< Updated upstream
  proof::(1) follows directly from the convexity of  $\phi(w) = w \log w$  by Jensen's inequality. To prove (2), suppose  $W = c$  almost surely. Then  $\bE\phi(W) = \bE \phi(c) = \phi(c) = \phi(\bE W)$ , giving that  $Ent(W)=0$ . (3) follows from direct computation as
+=======
+
+\end{theorem}
+
+proof::
+\begin{proof}[Proof of~{\autoref{Definition of entropy}}]
+\label{proof:Definition of entropy}
+(1) follows directly from the convexity of  $\phi(w) = w \log w$  by Jensen's inequality. To prove (2), suppose  $W = c$  almost surely. Then  $\bE\phi(W) = \bE \phi(c) = \phi(c) = \phi(\bE W)$ , giving that  $Ent(W)=0$ . (3) follows from direct computation as
+>>>>>>> Stashed changes
 
 
 \begin{align*}
@@ -315,6 +523,7 @@ Ent(aW) &= \bE[aW \log aW] - \bE(aW)\log (\bE aW)\\
 &= a\,Ent(W).
 \end{align*}
 
+<<<<<<< Updated upstream
  The entropy functional is related to the usual Kullback-Leibler divergence of appropriately constructed measures. Suppose  $P = \mathrm{Law}(X_1, \dots, X_m)$  and let  $W^{(\lambda)} = e^{\lambda g(X_1, \dots, X_m)}$  for  $\lambda \in \bR$ . 
 \section{Statement}
 \label{section:Statement}
@@ -336,6 +545,12 @@ D_{\mathrm{KL}}(P^{(\lambda)}||P) &= \bE\left[\frac{dP^{(\lambda)}}{dP} \log \fr
 where the second equality is due to the fact that  $\bE  \left[ \frac{dP^{(\lambda)}}{dP} \right] = 1$ , and the last inequality follows from the positive homogeneity of entropy.
 
 
+=======
+
+\end{proof}
+
+\autoref{Definition of entropy}
+>>>>>>> Stashed changes
 
 \printbibliography
 \end{document}
