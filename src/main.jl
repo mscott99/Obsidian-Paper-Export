@@ -11,8 +11,6 @@ include("obsidian_flavor.jl")
 include("unroll.jl")
 
 function main(input_folder::String, longform_file::String, outputfolder::String; texfilesfolder="./latex_files/")
-
-    metadata, unrolledcontent = unrolledmainfile(input_folder, longform_file)
     if !isdir(outputfolder)
         mkdir(outputfolder)
     end
@@ -31,6 +29,9 @@ function main(input_folder::String, longform_file::String, outputfolder::String;
         end
     end
 
+    metadata, unrolledcontent = unrolledmainfile(input_folder, longform_file)
+    abstract = find_heading_content(unrolledcontent, "Abstract"; removecontent=true)
+
     f = open(joinpath(outputfolder, "output.tex"), write=true, create=true)
     write(
         f,
@@ -41,7 +42,13 @@ function main(input_folder::String, longform_file::String, outputfolder::String;
 \\title{$(get(metadata, "title", longform_file))}
 \\author{$(get(metadata,"author", "Author"))}
 \\begin{document}
+\\maketitle
 ")
+    if !isnothing(abstract)
+        write(f, "\\abstract{")
+        latex(f, abstract)
+        write(f, "}\n")
+    end
     latex(f, unrolledcontent)
     write(
         f,

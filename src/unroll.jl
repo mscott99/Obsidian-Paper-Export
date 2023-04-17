@@ -30,24 +30,32 @@ function wikilink_label(elt::Wikilink)
     end
 end
 
-function find_heading_content(note::MD, heading::String)
+function find_heading_content(note::MD, heading::String; removecontent=false)
     inheader = false
     headerlevel = 0
     headercontent = []
-    for element in note.content
-        if !inheader && element isa Markdown.Header && element.text[1] == heading
+    headerindex = 0
+    for (i, element) in enumerate(note.content)
+        if !inheader && ((element isa Markdown.Header && lowercase(element.text[1]) == lowercase(heading))
+                         ||
+                         (element isa LabeledHeader && lowercase(element.header.text[1]) == lowercase(heading)))
             inheader = true
+            headerindex = i
             headerlevel = typeof(element).parameters[1]
             continue # skip the header 
         end
         if inheader
-            if element isa HorizontalRule || (element isa Markdown.Header && typeof(element).parameters[1] <= headerlevel)
+            if element isa HorizontalRule || (element isa Union{Markdown.Header,LabeledHeader} && typeof(element).parameters[1] <= headerlevel)
+                lastindex = i - 1
+                if removecontent
+                    deleteat!(note.content, headerindex:lastindex)
+                end
                 break
             end
             push!(headercontent, element)
         end
     end
-    return MD(config(note), headercontent...)
+    return isempty(headercontent) ? nothing : MD(config(note), headercontent...)
 end
 
 function unroll(elt::Wikilink, notesfolder::String, currentfile::String, globalstate::Dict)
