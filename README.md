@@ -46,6 +46,10 @@ I suggest to put each relevant result into its own note with a h1 header "Statem
 
 To omit information at the end of files, use a line break `---`, and insert the information after. Only dashed line breaks will be considered for this.
 
+## Demo
+See the [exported markdown file](examples/main_note.md). It produces barebones latex, which yields:
+![output sample](examples/output/example_output/output.pdf)
+
 # Aknowledgement
 
 See also the Obsidian-to-latex repository in python for an alternative implementation with a different focus.
