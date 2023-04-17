@@ -12,9 +12,6 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 
 > a quote; remove it
 >
-
-
-
 $$
 \begin{align*}
   \|\hat x - x_0\|_2
@@ -37,6 +34,8 @@ $$
 We present the following lemma:
 
 lemma::![[lemma_1#Statement]]
+
+proof::![[lemma_1#Proof]]
 
 The main theorem is:
 

@@ -1,3 +1,9 @@
+function wrapblock(f, io, env, displaycontent)
+    println(io, "\\begin{", env, "}[$displaycontent]")
+    f()
+    println(io, "\\end{", env, "}")
+end
+
 function extract_link_info(link)
     match_obj = match(r"!?\[\[([^#\|]+)(?:#([^\|]+?))?(?:\|(.+))?\]\]", link)
     if match_obj === nothing

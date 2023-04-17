@@ -3,10 +3,11 @@ using Markdown: list, hashheader, fencedcode, github_table, blocktex, footnote, 
 using Markdown
 using Markdown: *
 using Markdown: wrapinline
-import Markdown: latex, latexinline
+import Markdown: latex, latexinline, wrapblock
 
 include("obsidian_parser.jl")
 include("latex_builder.jl")
+include("utils.jl")
 include("obsidian_flavor.jl")
 include("unroll.jl")
 
@@ -73,6 +74,6 @@ else
 end
 
 #main("../../Ik-Vault/Zettelkasten/", "Sub-Gaussian McDiarmid Inequality and Classification on the Sphere", "./examples/output/project555_output/")
-#main("./examples/", "main_note", "./examples/output/"; texfilesfolder="./latex_files/")
-main("../../myVault/Zettelkasten/", "Journal Sample Longform", "./examples/output/journal1/")
+main("./examples/", "main_note", "./examples/output/"; texfilesfolder="./latex_files/")
+#main("../../myVault/Zettelkasten/", "Journal Sample Longform", "./examples/output/journal1/")
 #main("./myVault/Zettelkasten/", "./myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./export_markdown/Obsidian\ Paper\ Export/examples/output/uneven_journal/"; output_file_name="Uneven Sampling Journal Version.tex", img_folder_name="Files")

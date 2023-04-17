@@ -160,11 +160,21 @@ end
 
 import Markdown: latex
 function latex(io::IO, env::Environment)
-    wrapblock(io, env.environmentname) do
-        if env.label != ""
-            println(io, "\\label{$(env.label)}")
+    if env.environmentname == "proof"
+        targetlabel = match(r"(?:[^\:]+):(.*)", env.label)[1]
+        wrapblock(io, env.environmentname, "Proof of \\autoref{$targetlabel}") do
+            if env.label != ""
+                println(io, "\\label{$(env.label)}")
+            end
+            latex(io, env.content)
         end
-        latex(io, env.content)
+    else
+        wrapblock(io, env.environmentname) do
+            if env.label != ""
+                println(io, "\\label{$(env.label)}")
+            end
+            latex(io, env.content)
+        end
     end
     println(io)
 end
