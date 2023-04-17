@@ -48,8 +48,10 @@ To omit information at the end of files, use a line break `---`, and insert the 
 
 ## Demo
 See the [exported markdown file](examples/main_note.md). It produces barebones latex, which yields:
-![output sample](examples/output/example_output/output.pdf)
 
+Page 1 |   Page 2 
+:-------------------------:|:-------------------------:
+![output sample](examples/output/example_output/output_page-0001.jpg)  |  ![output sample](examples/output/example_output/output_page-0002.jpg)
 # Aknowledgement
 
 See also the Obsidian-to-latex repository in python for an alternative implementation with a different focus.
