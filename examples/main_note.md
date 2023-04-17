@@ -13,7 +13,7 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 
 #longform
 
-> a quote; remove it
+> a quote;
 >
 $$
 \begin{align*}
