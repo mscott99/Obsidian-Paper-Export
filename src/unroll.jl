@@ -2,14 +2,18 @@
 function unrolledmainfile(notesfolder::String, mainfile::String; kwargs...)
     @assert isdir(notesfolder) "Notes folder does not exist"
     @assert isfile(joinpath(notesfolder, mainfile * ".md")) "Main file does not exist"
-    md = nothing
-    md = open(joinpath(notesfolder, mainfile * ".md")) do f
-        parse(f, yamlparser)
-    end
+    f = open(joinpath(notesfolder, mainfile * ".md"))
+    md = parse(f, yamlparser; dropfirst=false)
+    close(f)
+
     metadata = md.content[1] isa YAMLHeader ? popfirst!(md.content).content : Dict()
 
-    globalstate = Dict{Symbol,Any}(:environments => Set())
-    push!(globalstate, kwargs...)
+    globalstate = Dict{Symbol,Any}(:environments => Set{Tuple}()) #ids of environments
+
+    merge!(globalstate, kwargs)
+    if !haskey(globalstate, :maxdepth)
+        globalstate[:maxdepth] = 10
+    end
     unrolledcontent = MD(config(md))
     for element in md.content
         if element isa Markdown.Header # do not rename headers in main file
@@ -18,7 +22,7 @@ function unrolledmainfile(notesfolder::String, mainfile::String; kwargs...)
             label = lowercase(String(take!(buffer))) # is meant to be applied after unrolling
             push!(unrolledcontent, LabeledHeader(label, element))
         else
-            push!(unrolledcontent, unroll(element, notesfolder, mainfile, globalstate)...)
+            push!(unrolledcontent, unroll(element, notesfolder, mainfile, globalstate, 0)...)
         end
     end
     return metadata, unrolledcontent
@@ -52,14 +56,14 @@ function find_heading_content(note::MD, heading::String; removecontent=false)
     return isempty(headercontent) ? nothing : MD(config(note), headercontent...)
 end
 
-function unroll(elt::Markdown.Paragraph, notesfolder::String, currentfile::String, globalstate::Dict)
+function unroll(elt::Markdown.Paragraph, notesfolder::String, currentfile::String, globalstate::Dict, depth::Int)
     outarray = []
     for element in elt.content
-        push!(outarray, unroll(element, notesfolder, currentfile, globalstate)...)
+        push!(outarray, unroll(element, notesfolder, currentfile, globalstate, depth)...)
     end
     return [Markdown.Paragraph(outarray)]
 end
 
-function unroll(elt, notesfolder::String, currentfile::String, globalstate::Dict)
+function unroll(elt, notesfolder::String, currentfile::String, globalstate::Dict, depth::Int)
     return [elt]
 end

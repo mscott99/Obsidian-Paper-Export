@@ -50,19 +50,28 @@ latex(io::IO, tex::LaTeX) =
 # found inline
 @trigger '$' ->
     function inlinetex(stream::IO, md::MD)
-        if startswith(stream, '$') && peek(stream, Char) != '$'
-            # display math
-            formula = readuntil(stream, "\$")
-            return isnothing(formula) ? nothing : InlineLaTeX(strip(formula))
-        end
+        result = parse_inline_wrapper(stream, "\$")
+        #if !startswith(stream, "$$", eat=false) && startswith(stream, '$', eat=false)
+        # display math
+
+        #    formula = readuntil(stream, "\$")
+        #    return isnothing(formula) ? nothing : InlineLaTeX(strip(formula))
+        #else
+        #    return nothing
+        #end
+        return result === nothing ? nothing : InlineLaTeX(result)
     end
 
 @trigger '$' ->
     function displayinlinetex(stream::IO, md::MD)
+        result = parse_inline_wrapper(stream, "\$\$")
+        return result === nothing ? nothing : DisplayLaTeX(result)
+        #=
         if startswith(stream, "\$\$")
             formula = readuntil(stream, "\$\$"; newlines=true)
             return isnothing(formula) ? nothing : DisplayLaTeX(strip(formula))
         else
             return nothing
         end
+        =#
     end

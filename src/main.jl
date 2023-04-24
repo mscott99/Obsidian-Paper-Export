@@ -44,7 +44,7 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
         latex(f, abstract)
         write(f, "}\n")
     end
-    latex(f, unrolledcontent)
+    latex(f, unrolledcontent, metadata)
     write(
         f,
         "\\printbibliography
@@ -55,9 +55,12 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
     @info "Export Completed!"
 end
 
+
 if !(length(ARGS) in [3, 4])
     println("Usage: julia main.jl <input_folder> <longform_file> <output_file>[ <config_file>]")
+    exit()
 end
+
 
 if length(ARGS) == 4
     scriptconfig = YAML.load_file(ARGS[4])
@@ -75,20 +78,19 @@ end
 main(ARGS...)
 
 #=
-scriptconfig = YAML.load_file(ARGS[4])
+scriptconfig = YAML.load_file("./examples/config.YAML")
 if scriptconfig["ignore_quotes"]
     @info "Ignoring quotes from config"
     eval(quote
         import Markdown: BlockQuote
         function latex(io::IO, md::BlockQuote)
-            println("Ignoring quote")
             return ""
         end
     end)
 end
-
+=#
+#main("../../myVault/Zettelkasten/", "Longform Conference Uneven Sampling", "./examples/output/Uneven_Sampling_Conference/")
 #main("../../Ik-Vault/Zettelkasten/", "Sub-Gaussian McDiarmid Inequality and Classification on the Sphere", "./examples/output/project555_output/")
-main("./examples/", "main_note", "./examples/output/example_output/"; texfilesfolder="./latex_files/")
+#main("./examples/", "main_note", "./examples/output/example_output/"; texfilesfolder="./latex_files/")
 #main("../../myVault/Zettelkasten/", "Journal Sample Longform", "./examples/output/journal1/")
 #main("./myVault/Zettelkasten/", "./myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./export_markdown/Obsidian\ Paper\ Export/examples/output/uneven_journal/"; output_file_name="Uneven Sampling Journal Version.tex", img_folder_name="Files")
-=#

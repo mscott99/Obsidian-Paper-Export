@@ -18,10 +18,15 @@ function yamlparser(stream::IO, block::MD)
 end
 
 import Markdown.parse
-function parse(stream::Core.IO, initialparser::Core.Function; flavor=obsidian)
+function parse(stream::Core.IO, initialparser::Core.Function; flavor=obsidian, dropfirst=true)
     isa(flavor, Symbol) && (flavor = flavors[flavor])
     markdown = MD(flavor)
-    initialparser(stream, markdown)
+    if dropfirst
+        buffer = MD(flavor)
+        initialparser(stream, buffer)
+    else
+        initialparser(stream, markdown)
+    end
     while parse(stream, markdown, flavor)
     end
     return markdown

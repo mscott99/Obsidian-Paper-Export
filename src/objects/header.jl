@@ -22,7 +22,7 @@ function sectionlabel(originalheader::Header, address::String)
 end
 
 
-function unroll(elt::Markdown.Header, notesfolder::String, currentfile::String, globalstate::Dict)
+function unroll(elt::Markdown.Header, notesfolder::String, currentfile::String, globalstate::Dict, depth::Int)
     label = currentfile * ':' * Markdown.plaininline(elt.text)
     return [LabeledHeader(label, elt)]
 end

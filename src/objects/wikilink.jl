@@ -3,7 +3,11 @@ mutable struct Wikilink
     header::String
     displaytext::String
     embed::Bool
+    attribute::String
+    Wikilink(address::String, header::String, displaytext::String, embed::Bool, attribute::String="") =
+        new(address, header, displaytext, embed, attribute)
 end
+
 
 mutable struct Citation
     address::String
@@ -36,29 +40,24 @@ latexinline(io::IO, citation::Citation) = print(io, "\\cite{$(citation.address)}
         end
     end
 
-function latexinline(io::IO, link::Wikilink)
-    if link.embed
-        print(io, "![[$(link.address)]]")
-        return
-    end
-    if link.displaytext |> isempty
-        print(io, "\\autoref{$(link.address)}")
-        return
-    end
-    print(io, "$(link.displaytext)\\autoref{$(link.address)}")
-end
+@breaking true ->
+    function embedwikilink(stream::IO, block::MD)
+        withstream(stream) do
+            skipwhitespace(stream)
+            startswith(stream, "![[") || return false
+            content = wikilink_content(stream, block, true)
+            isnothing(content) && return false
 
-function latex(io::IO, link::Wikilink)
-    if link.embed
-        println(io, "![[$(link.address)]]")
-        return
+            #figure support
+            if occursin(r"\.png|\.jpg|\.jpeg|\.gif|\.svg|\.pdf|\.tiff?$", content.address)
+                push!(block, Figure(content.address, content.displaytext))
+                return true
+            end
+
+            push!(block, content)
+            return true
+        end
     end
-    if link.displaytext |> isempty
-        println(io, "\\autoref{$(link.address)}")
-        return
-    end
-    println(io, "$(link.displaytext)\\autoref{$(link.address)}")
-end
 
 function wikilink_content(stream::IO, block::MD, embed::Bool)
     namebuffer = IOBuffer()
@@ -78,44 +77,134 @@ function wikilink_content(stream::IO, block::MD, embed::Bool)
 end
 
 function wikilink_label(elt::Wikilink)
-    if elt.header |> isempty || elt.header == "Statement"
-        return elt.address
-    else
-        return lowercase(elt.header * ':' * elt.address)
-    end
+    return lowercase(elt.address)
 end
 
-function unroll(elt::Wikilink, notesfolder::String, currentfile::String, globalstate::Dict)
-    if elt.embed
-        if wikilink_label(elt) in globalstate[:environments]
-            elt.embed = false
-            return [Paragraph([elt])] # non-embed wikilinks are inline.
-        end
-        filepath = joinpath(notesfolder, elt.address * ".md")
-        local filecontent
-        if isfile(filepath)
-            filecontent = open(filepath) do f
-                parse(f, yamlparser)
-            end
-        else
-            @warn "File $filepath does not exist"
+function unroll(elt::Wikilink, notesfolder::String, currentfile::String, globalstate::Dict, depth::Int)
+    if !elt.embed
+        return [elt]
+    end
+
+    if (elt.address, elt.header) in globalstate[:environments]
+        @warn "Repeated embed detected for $(elt.address) $(elt.header), reverting it to reference."
+        elt.embed = false
+        return [Paragraph([elt])]
+    end
+    if depth >= globalstate[:maxdepth]
+        @warn "Maximum depth reached for $(elt.address) $(elt.header), reverting it to reference."
+        elt.embed = false
+        return [Paragraph([elt])] # non-embed wikilinks are inline.
+    end
+
+    filepath = joinpath(notesfolder, elt.address * ".md")
+    if !isfile(filepath)
+        @warn "File $filepath does not exist"
+        elt.embed = false
+        return [Paragraph([elt])]
+    end
+
+    f = open(filepath)
+    filecontent = parse(f, yamlparser)
+    close(f)
+
+    if elt.header != ""
+        filecontent = find_heading_content(filecontent, elt.header)
+        if isnothing(filecontent)
+            @warn "File $filepath does not contain heading $(elt.header), reverting to reference."
             elt.embed = false
             return [Paragraph([elt])]
         end
+    end
 
-        if elt.header != ""
-            filecontent = find_heading_content(filecontent, elt.header)
-        end
-        currentfile = elt.address
-        unrolledcontent = []
-        if filecontent[1] isa YAMLHeader
-            popfirst!(filecontent)
-        end
-        for element in filecontent.content
-            push!(unrolledcontent, unroll(element, notesfolder, currentfile, globalstate)...)
-        end
-        return unrolledcontent
+    currentfile = elt.address
+    unrolledcontent = []
+    if filecontent[1] isa YAMLHeader
+        popfirst!(filecontent)
+    end
+    for element in filecontent.content
+        push!(unrolledcontent, unroll(element, notesfolder, currentfile, globalstate, depth + 1)...)
+    end
+    return unrolledcontent
+end
+
+function show(io::IO, link::Wikilink)
+    if link.embed
+        print(io, "!")
+    end
+    print(io, "[[$(link.address)")
+    if !isempty(link.header)
+        print(io, "#$(link.header)")
+    end
+    if !isempty(link.displaytext)
+        print(io, "|$(link.displaytext)")
+    end
+    print(io, "]]")
+    return
+end
+
+# fallback when no config.
+latexinline(io::IO, obj, config) = latexinline(io, obj)
+
+function latexinline(io::IO, link::Wikilink)
+    if link.embed
+        show(io, link)
+        return
+    end
+    if link.displaytext |> isempty
+        print(io, "\\autoref{$(lowercase(link.address))}")
+        return
     else
-        return [elt]
+        println(io, "$(link.displaytext)\\ref{$(lowercase(link.address))}")
+        return
+    end
+end
+
+function latexinline(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
+    if link.embed
+        show(io, link)
+        return
+    end
+    if link.displaytext |> isempty
+        print(io, "\\autoref{$(lowercase(link.address))}")
+        return
+    else
+        print(io, "$(link.displaytext)")
+        if refs_with_display_text
+            print(io, "\\ref{$(lowercase(link.address))}")
+        end
+        return
+    end
+end
+
+function latex(io::IO, link::Wikilink)
+    if link.embed
+        println(io, "![[$(link.address)]]")
+        return
+    end
+    if link.displaytext |> isempty
+        println(io, "\\autoref{$(link.address)}")
+        return
+    else
+        println(io, "$(link.displaytext)\\ref{$(link.address)}")
+        return
+    end
+end
+
+function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
+    if link.embed
+        show(io, link)
+        println(io)
+        return
+    end
+    if link.displaytext |> isempty
+        println(io, "\\autoref{$(lowercase(link.address))}")
+        return
+    else
+        print(io, "$(link.displaytext)")
+        if refs_with_display_text
+            print(io, "\\ref{$(lowercase(link.address))}")
+        end
+        println(io)
+        return
     end
 end

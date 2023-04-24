@@ -3,25 +3,7 @@ mutable struct Figure
     caption::String
 end
 
-@breaking true ->
-    function embedwikilink(stream::IO, block::MD)
-        withstream(stream) do
-            startswith(stream, "![[") || return false
-            content = wikilink_content(stream, block, true)
-            isnothing(content) && return false
-
-            #figure support
-            if occursin(r"\.png|\.jpg|\.jpeg|\.gif|\.svg|\.pdf|\.tiff?$", content.address)
-                push!(block, Figure(content.address, content.displaytext))
-                return true
-            end
-
-            push!(block, content)
-            return true
-        end
-    end
-
-function unroll(elt::Figure, notesfolder::String, currentfile::String, globalstate::Dict)
+function unroll(elt::Figure, notesfolder::String, currentfile::String, globalstate::Dict, depth::Int)
     if !(isfile(joinpath(notesfolder, globalstate[:filefolder], elt.address)))
         @warn "File folder does not exist"
         elt.address = joinpath(globalstate[:filefolder], elt.address)
