@@ -25,8 +25,9 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
 
     metadata, unrolledcontent = unrolledmainfile(input_folder, longform_file; filefolder=imgfilefolder, outfolder=outputfolder)
     abstract = find_heading_content(unrolledcontent, "Abstract"; removecontent=true)
+    appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true)
     merge!(metadata, YAML.load_file(configfile))
-
+    @info appendix
     f = open(joinpath(outputfolder, "output.tex"), write=true, create=true)
     write(
         f,
@@ -52,10 +53,32 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
     )
     #end
     close(f)
+    if !isnothing(appendix)
+        f = open(joinpath(outputfolder, "supp.tex"), write=true, create=true)
+        write(
+            f,
+            "\\documentclass{article}
+\\input{header}
+\\input{preamble.sty}
+\\addbibresource{bibliography.bib}
+\\title{$(get(metadata, "appendix_title", "Appendix"))}
+\\author{$(get(metadata,"author", "Author"))}
+\\begin{document}
+\\maketitle
+")
+        latex(f, appendix, metadata)
+        write(
+            f,
+            "\\printbibliography
+\\end{document}"
+        )
+        close(f)
+    end
     @info "Export Completed!"
 end
 
 
+#=
 if !(length(ARGS) in [3, 4])
     println("Usage: julia main.jl <input_folder> <longform_file> <output_file>[ <config_file>]")
     exit()
@@ -76,8 +99,7 @@ if length(ARGS) == 4
 end
 
 main(ARGS...)
-
-#=
+=#
 scriptconfig = YAML.load_file("./examples/config.YAML")
 if scriptconfig["ignore_quotes"]
     @info "Ignoring quotes from config"
@@ -88,8 +110,7 @@ if scriptconfig["ignore_quotes"]
         end
     end)
 end
-=#
-#main("../../myVault/Zettelkasten/", "Longform Conference Uneven Sampling", "./examples/output/Uneven_Sampling_Conference/")
+main("../../myVault/Zettelkasten/", "Longform Conference Uneven Sampling", "./examples/output/Uneven_Sampling_Conference/")
 #main("../../Ik-Vault/Zettelkasten/", "Sub-Gaussian McDiarmid Inequality and Classification on the Sphere", "./examples/output/project555_output/")
 #main("./examples/", "main_note", "./examples/output/example_output/"; texfilesfolder="./latex_files/")
 #main("../../myVault/Zettelkasten/", "Journal Sample Longform", "./examples/output/journal1/")
