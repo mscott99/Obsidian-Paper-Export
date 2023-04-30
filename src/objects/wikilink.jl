@@ -8,13 +8,6 @@ mutable struct Wikilink
         new(address, header, displaytext, embed, attribute)
 end
 
-
-mutable struct Citation
-    address::String
-end
-
-latexinline(io::IO, citation::Citation) = print(io, "\\cite{$(citation.address)}")
-
 @trigger '!' ->
     function inline_embedwikilink(stream::IO, block::MD)
         withstream(stream) do
@@ -27,18 +20,15 @@ latexinline(io::IO, citation::Citation) = print(io, "\\cite{$(citation.address)}
     function wikilink(stream::IO, block::MD)
         withstream(stream) do
             if startswith(stream, "[[")
-                wikicontent = wikilink_content(stream, block, false)
-                if wikicontent.address[1] == '@' # wikilink to pandoc citations.
-                    return Citation(wikicontent.address[2:end])
+                if !eof(stream) && peek(stream) == '@'
+                    return nothing # handled by citation
                 end
+                wikicontent = wikilink_content(stream, block, false)
                 return wikicontent
-            elseif startswith(stream, "[@") # allow for standard pandoc citations
-                linkaddress = readuntil(stream, ']')
-                return isnothing(linkaddress) ? nothing : Citation(linkaddress)
             end
-            return nothing
         end
     end
+
 
 @breaking true ->
     function embedwikilink(stream::IO, block::MD)
@@ -165,29 +155,19 @@ function latexinline(io::IO, link::Wikilink; refs_with_display_text=false, kwarg
         return
     end
     if link.displaytext |> isempty
+        if link.header == "Proof"
+            # print(io, "\\autoref{proof:$(lowercase(link.address))}")
+            print(io, "\\hyperlink{proof:$(lowercase(link.address))}{the proof}")
+            return
+        end
         print(io, "\\autoref{$(lowercase(link.address))}")
         return
-    else
-        print(io, "$(link.displaytext)")
-        if refs_with_display_text
-            print(io, "\\ref{$(lowercase(link.address))}")
-        end
-        return
     end
-end
-
-function latex(io::IO, link::Wikilink)
-    if link.embed
-        println(io, "![[$(link.address)]]")
-        return
+    print(io, "$(link.displaytext)")
+    if refs_with_display_text
+        print(io, "\\ref{$(lowercase(link.address))}")
     end
-    if link.displaytext |> isempty
-        println(io, "\\autoref{$(link.address)}")
-        return
-    else
-        println(io, "$(link.displaytext)\\ref{$(link.address)}")
-        return
-    end
+    return
 end
 
 function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
@@ -197,14 +177,50 @@ function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
         return
     end
     if link.displaytext |> isempty
+        if link.header == "Proof"
+            println(io, "\\autoref{proof:$(lowercase(link.address))}")
+            return
+        end
         println(io, "\\autoref{$(lowercase(link.address))}")
         return
-    else
-        print(io, "$(link.displaytext)")
-        if refs_with_display_text
-            print(io, "\\ref{$(lowercase(link.address))}")
-        end
-        println(io)
-        return
     end
+    print(io, "$(link.displaytext)")
+    if refs_with_display_text
+        print(io, "\\ref{$(lowercase(link.address))}")
+    end
+    println(io)
 end
+
+
+# function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
+#     if link.embed
+#         show(io, link)
+#         println(io)
+#         return
+#     end
+#     if link.displaytext |> isempty
+#         println(io, "\\autoref{$(lowercase(link.address))}")
+#         return
+#     else
+#         print(io, "$(link.displaytext)")
+#         if refs_with_display_text
+#             print(io, "\\ref{$(lowercase(link.address))}")
+#         end
+#         println(io)
+#         return
+#     end
+# end
+
+# function latex(io::IO, link::Wikilink)
+#     if link.embed
+#         println(io, "![[$(link.address)]]")
+#         return
+#     end
+#     if link.displaytext |> isempty
+#         println(io, "\\autoref{$(link.address)}")
+#         return
+#     else
+#         println(io, "$(link.displaytext)\\ref{$(link.address)}")
+#         return
+#     end
+# end

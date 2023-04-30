@@ -10,26 +10,6 @@ mutable struct Environment
     end
 end
 
-
-
-#=
-function environmentinfo(stream::IO)
-    withstream(stream) do
-        startswith(stream, "::") && return false # we need a name for an environment
-        envbuffer = IOBuffer()
-        while !eof(stream)
-            startswith(stream, ' ') && return false
-            startswith(stream, '\n') && return false
-            startswith(stream, "::") && break
-            write(envbuffer, read(stream, Char))
-        end
-        environmentname = String(take!(envbuffer))
-        skipwhitespace(stream)
-        return environmentname
-    end
-end
-=#
-
 @breaking true ->
     function environment(stream::IO, block::MD)
         withstream(stream) do
@@ -114,16 +94,16 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
 end
 
 import Markdown: latex
-function latex(io::IO, env::Environment)
+function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition"], kwargs...)
     if env.environmentname == "proof"
         #targetlabel = match(r"(?:[^\:]+):(.*)", env.label)[1]
-        wrapblock(io, env.environmentname, "Proof of \\autoref{$(lowercase(env.originalfile))}") do
+        wrapblock(io, env.environmentname, "\\hypertarget{proof:$(lowercase(env.originalfile))}Proof of \\autoref{$(lowercase(env.originalfile))}") do
             if env.label != ""
                 println(io, "\\label{$(env.label)}")
             end
             latex(io, env.content)
         end
-    elseif env.environmentname == "definition"
+    elseif env.environmentname in display_name_of_envs
         wrapblock(io, env.environmentname, env.originalfile) do
             if env.label != ""
                 println(io, "\\label{$(env.label)}")

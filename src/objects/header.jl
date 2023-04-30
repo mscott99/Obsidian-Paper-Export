@@ -3,6 +3,9 @@ struct LabeledHeader{l}
     header::Header{l}
 end
 
+LabeledHeader(label::String, header, l::Int) = LabeledHeader(label, Header(header.text, l))
+
+
 function latex(io::IO, header::LabeledHeader)
     latex(io, header.header)
     wrapinline(io, "label") do
