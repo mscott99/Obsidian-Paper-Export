@@ -1,6 +1,6 @@
 
 function unrolledmainfile(notesfolder::String, mainfile::String; kwargs...)
-    @assert isdir(notesfolder) "Notes folder does not exist"
+    @assert isdir(notesfolder) "Notes folder does not exist: $notesfolder"
     @assert isfile(joinpath(notesfolder, mainfile * ".md")) "Main file does not exist"
     f = open(joinpath(notesfolder, mainfile * ".md"))
     md = parse(f, yamlparser; dropfirst=false)
@@ -33,6 +33,7 @@ function find_heading_content(note::MD, heading::String; removecontent=false)
     headerlevel = 0
     headercontent = []
     headerindex = 0
+    lastindex = 0
     for (i, element) in enumerate(note.content)
         if !inheader && ((element isa Markdown.Header && lowercase(element.text[1]) == lowercase(heading))
                          ||
@@ -45,13 +46,14 @@ function find_heading_content(note::MD, heading::String; removecontent=false)
         if inheader
             if element isa HorizontalRule || (element isa Union{Markdown.Header,LabeledHeader} && typeof(element).parameters[1] <= headerlevel)
                 lastindex = i - 1
-                if removecontent
-                    deleteat!(note.content, headerindex:lastindex)
-                end
                 break
             end
             push!(headercontent, element)
         end
+    end
+    lastindex = lastindex == 0 ? length(note.content) : lastindex
+    if removecontent
+        deleteat!(note.content, headerindex:lastindex)
     end
     return isempty(headercontent) ? nothing : MD(config(note), headercontent...)
 end

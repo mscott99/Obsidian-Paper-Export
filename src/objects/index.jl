@@ -29,6 +29,10 @@ function latex(io::IO, content::Vector; kwargs...)
     end
 end
 
+function latexinline(io::IO, md::AbstractString)
+    print(io, md)
+end
+
 latex(io::IO, md::MD; kwargs...) = latex(io, md.content; kwargs...)
 
 # default

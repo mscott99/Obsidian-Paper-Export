@@ -2,7 +2,7 @@ struct DoubleQuote
     text::String
 end
 
-latexinline(io::IO, quoteobj::DoubleQuote) = print(io, "``$(quoteobj.text)\"")
+latexinline(io::IO, quoteobj::DoubleQuote) = print(io, "``$(quoteobj.text)''")
 
 @trigger '"' ->
     function doublequote(stream::IO, block::MD)

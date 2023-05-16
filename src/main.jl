@@ -3,8 +3,9 @@ using YAML
 include("./objects/index.jl")
 include("utils.jl")
 include("unroll.jl")
+using Markdown: startswith
 
-function main(input_folder::String, longform_file::String, outputfolder::String, configfile="./examples/config.YAML"; texfilesfolder="./latex_files/", imgfilefolder="Files")
+function main(input_folder::String, longform_file::String, outputfolder::String, configfile="./config.YAML"; texfilesfolder="./latex_files/", imgfilefolder="Files", main_doc_template="")
     if !isdir(outputfolder)
         mkdir(outputfolder)
     end
@@ -28,30 +29,40 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
     appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true) |> reduceallheaders
     merge!(metadata, YAML.load_file(configfile))
     f = open(joinpath(outputfolder, "output.tex"), write=true, create=true)
-    write(
-        f,
-        "\\documentclass{article}
-\\input{header}
-\\input{preamble.sty}
-\\addbibresource{bibliography.bib}
-\\title{$(get(metadata, "title", escape_latex(longform_file)))}
-\\author{$(get(metadata,"author", "Author"))}
-\\begin{document}
-\\maketitle
-")
-    if !isnothing(abstract)
-        write(f, "\\abstract{")
-        latex(f, abstract)
-        write(f, "}\n")
+
+    main_doc_template = isempty(main_doc_template) ? get(metadata, "main_doc_template", "") : main_doc_template
+    if !isempty(main_doc_template)
+        cp(main_doc_template, joinpath(outputfolder, "output.tex"), force=true)
+        if !isnothing(abstract)
+            replaceinfile(joinpath(outputfolder, "output.tex"), "\$abstract\$", abstract)
+        end
+        replaceinfile(joinpath(outputfolder, "output.tex"), "\$body\$", unrolledcontent)
+    else
+        write(
+            f,
+            "\\documentclass{article}
+    \\input{header}
+    \\input{preamble.sty}
+    \\addbibresource{bibliography.bib}
+    \\title{$(get(metadata, "title", escape_latex(longform_file)))}
+    \\author{$(get(metadata,"author", "Author"))}
+    \\begin{document}
+    \\maketitle
+    ")
+        if !isnothing(abstract)
+            write(f, "\\abstract{")
+            latex(f, abstract)
+            write(f, "}\n")
+        end
+        latex(f, unrolledcontent, metadata)
+        write(
+            f,
+            "\\printbibliography
+    \\end{document}"
+        )
+        #end
+        close(f)
     end
-    latex(f, unrolledcontent, metadata)
-    write(
-        f,
-        "\\printbibliography
-\\end{document}"
-    )
-    #end
-    close(f)
     if !isnothing(appendix)
         f = open(joinpath(outputfolder, "supp.tex"), write=true, create=true)
         #=        write(
@@ -98,6 +109,27 @@ function reduceallheaders(content::Nothing)
     return nothing
 end
 
+function replaceinfile(file, string, replacestring)
+    f = open(file, "r+")
+    while !eof(f)
+        if startswith(f, string; eat=false)
+            mark(f)
+            buf = IOBuffer()
+            startswith(f, string; eat=true) # replace the anchor
+            write(buf, f)
+            seekstart(buf)
+            reset(f)
+            latex(f, replacestring)
+            write(f, buf)
+            close(f)
+            return
+        end
+        read(f, Char)
+    end
+    @warn "template had no occurence of: $string"
+    close(f)
+end
+
 #=
 if !(length(ARGS) in [3, 4])
     println("Usage: julia main.jl <input_folder> <longform_file> <output_file>[ <config_file>]")
@@ -120,9 +152,9 @@ end
 
 main(ARGS...)
 =#
-scriptconfig = YAML.load_file("./examples/config.YAML")
+scriptconfig = YAML.load_file("./config.YAML")
 if scriptconfig["ignore_quotes"]
-    @info "Ignoring quotes from config"
+    @info "Ignoring Markdown Quotes, change the Config if this is not desired."
     eval(quote
         import Markdown: BlockQuote
         function latex(io::IO, md::BlockQuote)
@@ -130,8 +162,9 @@ if scriptconfig["ignore_quotes"]
         end
     end)
 end
+
 #main("../../Ik-Vault/Zettelkasten/", "Sub-Gaussian McDiarmid Inequality and Classification on the Sphere", "./examples/output/project555_output/")
 #main("./examples/", "main_note", "./examples/output/example_output/"; texfilesfolder="./latex_files/")
 #main("../../myVault/Zettelkasten/", "Journal Sample Longform", "./examples/output/journal1/")
 #main("./myVault/Zettelkasten/", "./myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./export_markdown/Obsidian\ Paper\ Export/examples/output/uneven_journal/"; output_file_name="Uneven Sampling Journal Version.tex", img_folder_name="Files")
-main("../../myVault/Zettelkasten/", "Longform Conference Uneven Sampling", "./examples/output/Uneven_Sampling_Conference/");
+#main("../../myVault/Zettelkasten/", "Longform Conference Uneven Sampling", "./testout");
