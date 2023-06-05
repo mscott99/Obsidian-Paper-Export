@@ -5,38 +5,38 @@ include("utils.jl")
 include("unroll.jl")
 using Markdown: startswith
 
-function main(input_folder::String, longform_file::String, outputfolder::String, configfile="./config.YAML"; texfilesfolder="./latex_files/", imgfilefolder="Files", main_doc_template="")
-    if !isdir(outputfolder)
-        mkdir(outputfolder)
+function main(input_folder_path::String, longform_file_name::String, outputfolder_path::String; texfilesfolder="./latex_files/", imgfilefolder="Files", main_doc_template="", kwargs...)
+    if !isdir(outputfolder_path)
+        mkdir(outputfolder_path)
     end
-    if isfile(joinpath(outputfolder, "output.tex"))
-        rm(joinpath(outputfolder, "output.tex"))
+    if isfile(joinpath(outputfolder_path, "output.tex"))
+        rm(joinpath(outputfolder_path, "output.tex"))
     end
     if !isempty(texfilesfolder)
-        if isfile(joinpath(texfilesfolder, "preamble.sty")) && !isfile(joinpath(outputfolder, "preamble.sty"))
-            cp(joinpath(texfilesfolder, "preamble.sty"), joinpath(outputfolder, "preamble.sty"))
+        if isfile(joinpath(texfilesfolder, "preamble.sty")) && !isfile(joinpath(outputfolder_path, "preamble.sty"))
+            cp(joinpath(texfilesfolder, "preamble.sty"), joinpath(outputfolder_path, "preamble.sty"))
         end
-        if isfile(joinpath(texfilesfolder, "header.tex")) && !isfile(joinpath(outputfolder, "header.tex"))
-            cp(joinpath(texfilesfolder, "header.tex"), joinpath(outputfolder, "header.tex"))
+        if isfile(joinpath(texfilesfolder, "header.tex")) && !isfile(joinpath(outputfolder_path, "header.tex"))
+            cp(joinpath(texfilesfolder, "header.tex"), joinpath(outputfolder_path, "header.tex"))
         end
-        if isfile(joinpath(texfilesfolder, "bibliography.bib")) && !isfile(joinpath(outputfolder, "bibliography.bib"))
-            cp(joinpath(texfilesfolder, "bibliography.bib"), joinpath(outputfolder, "bibliography.bib"))
+        if isfile(joinpath(texfilesfolder, "bibliography.bib")) && !isfile(joinpath(outputfolder_path, "bibliography.bib"))
+            cp(joinpath(texfilesfolder, "bibliography.bib"), joinpath(outputfolder_path, "bibliography.bib"))
         end
     end
 
-    metadata, unrolledcontent = unrolledmainfile(input_folder, longform_file; filefolder=imgfilefolder, outfolder=outputfolder)
+    metadata, unrolledcontent = unrolledmainfile(input_folder_path, longform_file_name; filefolder=imgfilefolder, outfolder=outputfolder_path)
     abstract = find_heading_content(unrolledcontent, "Abstract"; removecontent=true)
     appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true) |> reduceallheaders
-    merge!(metadata, YAML.load_file(configfile))
-    f = open(joinpath(outputfolder, "output.tex"), write=true, create=true)
+    # merge!(metadata, YAML.load_file(configfile_path))
+    f = open(joinpath(outputfolder_path, "output.tex"), write=true, create=true)
 
     main_doc_template = isempty(main_doc_template) ? get(metadata, "main_doc_template", "") : main_doc_template
     if !isempty(main_doc_template)
-        cp(main_doc_template, joinpath(outputfolder, "output.tex"), force=true)
+        cp(main_doc_template, joinpath(outputfolder_path, "output.tex"), force=true)
         if !isnothing(abstract)
-            replaceinfile(joinpath(outputfolder, "output.tex"), "\$abstract\$", abstract)
+            replaceinfile(joinpath(outputfolder_path, "output.tex"), "\$abstract\$", abstract)
         end
-        replaceinfile(joinpath(outputfolder, "output.tex"), "\$body\$", unrolledcontent)
+        replaceinfile(joinpath(outputfolder_path, "output.tex"), "\$body\$", unrolledcontent)
     else
         write(
             f,
@@ -44,7 +44,7 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
     \\input{header}
     \\input{preamble.sty}
     \\addbibresource{bibliography.bib}
-    \\title{$(get(metadata, "title", escape_latex(longform_file)))}
+    \\title{$(get(metadata, "title", escape_latex(longform_file_name)))}
     \\author{$(get(metadata,"author", "Author"))}
     \\begin{document}
     \\maketitle
@@ -64,7 +64,7 @@ function main(input_folder::String, longform_file::String, outputfolder::String,
         close(f)
     end
     if !isnothing(appendix)
-        f = open(joinpath(outputfolder, "supp.tex"), write=true, create=true)
+        f = open(joinpath(outputfolder_path, "supp.tex"), write=true, create=true)
         #=        write(
                     f,
                     "\\documentclass{article}
@@ -130,12 +130,37 @@ function replaceinfile(file, string, replacestring)
     close(f)
 end
 
-#=
-if !(length(ARGS) in [3, 4])
-    println("Usage: julia main.jl <input_folder> <longform_file> <output_file>[ <config_file>]")
-    exit()
+function main(config_dict::Dict)
+    # Check that all the keys are in the dict, and return an error if not
+    main_keys = [:input_folder_path, :longform_file_name, :output_folder_path]
+    for key in main_keys
+        if !haskey(config_dict, key)
+            @error "Field $key not found in config file"
+        end
+    end
+    main(config_dict[:input_folder_path], config_dict[:longform_file_name], config_dict[:output_folder_path]; config_dict...)
 end
 
+# if !(length(ARGS) in [3, 4])
+#     println("Usage: julia main.jl <input_folder> <longform_file_name> <output_folder_path> [<config_file_path>]")
+#     exit()
+# end
+
+if length(ARGS) == 1
+    scriptconfig = YAML.load_file(ARGS[1])
+    if scriptconfig["ignore_quotes"]
+        @info "Ignoring quotes from config"
+        eval(quote
+            import Markdown: BlockQuote
+            function latex(io::IO, md::BlockQuote)
+                return ""
+            end
+        end)
+    end
+    scriptconfig = Dict(Symbol(key) => value for (key, value) in scriptconfig)
+    main(scriptconfig)
+    exit(1)
+end
 
 if length(ARGS) == 4
     scriptconfig = YAML.load_file(ARGS[4])
@@ -150,8 +175,6 @@ if length(ARGS) == 4
     end
 end
 
-main(ARGS...)
-=#
 scriptconfig = YAML.load_file("./config.YAML")
 if scriptconfig["ignore_quotes"]
     @info "Ignoring Markdown Quotes, change the Config if this is not desired."
