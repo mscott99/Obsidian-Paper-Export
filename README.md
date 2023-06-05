@@ -3,21 +3,33 @@
 This project exports an Obsidian note to a LaTeX math academic paper, retaining embeds as proofs and results. The main feature is to embed contents through Obsidian wikilinks from other local files.
 
 ## Usage
-1. install julia: use juliaup.
+1. install julia: use [juliaup](https://github.com/JuliaLang/juliaup).
 
-2. Run with:
-```bash
-julia main.jl <input_folder> <longform_file> <output_file>
-```
+2. Add the YAML package globally: in a terminal, run
+    ``` julia ``` to enter the julia REPL, then
+    ```julia
+    ] add YAML
+    ```
+    ```
+    exit()
+    ```
+3. Clone this repository.
+4. Make a config file as described [below](#config-file).
+5. Optionally, add header and bibliography files to the output folder that is specified in the config file.
+6. In a terminal, navigate to the repository folder and run the script:
+    ```zsh
+    julia ./src/main.jl <config_file_path>
+    ```
+    where `<config_file_path>` is the path to the config file you created.
 
-- `input_folder` should contain all the files that should be visible to the program.
-- `longform_file` path to the file which is to be exported along with all its embeds.
-- òutput_file` path for the latex output.
+## Config File
+The config file is a YAML file that contains the following fields:
+- `main_doc_template`: path to the latex template file for the main document. It should contain `$abstract` and `$body` placeholders.
+- `ignore_quotes`: Whether to export quotes or ignore them. When ignoring them, quotes in markdown can be used to comment the markdown file without impacting the export.
+- `input_folder_path`: path to the folder containing the markdown files, including the files that are to be embedded by the main longform file. All files should be in a single folder, no sub-folders are supported.
+- `output_folder_path`: path to the folder where the output files will be written. It will be created if it does not exist.
+- `longform_file_name`: name of the file to treat as the main document. It should be in the input folder. This field should not be a path, and not include the file extension. If the file has path `.../input_folder/longform.md`, then the field should be `longform`.
 
-For example, running from the root folder, you can build the example as follows:
-```
-julia main.jl ./examples ./examples/main_note.md ./examples/output.tex
-```
 ## Supported Elements
 Most markdown elements that you can find in the obsidian are supported. A notable exception is an embed link that is not on a new line. It will throw an error.
 ### Markdown headers 
