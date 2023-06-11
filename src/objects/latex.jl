@@ -47,6 +47,7 @@ latex(io::IO, tex::LaTeX) =
             startswith(stream, "\$\$", padding=true) || return false
             mathcontent = readuntil(stream, "\$\$"; newlines=true)
             isnothing(mathcontent) && return false
+            mathcontent = replace(mathcontent, r"[ |\t]*\n[\n| |\t]*" => x -> "\n") # remove blank lines
             push!(block, DisplayLaTeX(strip(mathcontent)))
             return true
         end

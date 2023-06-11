@@ -1,9 +1,10 @@
 using YAML
+using Markdown: startswith
 
 include("./objects/index.jl")
 include("utils.jl")
 include("unroll.jl")
-using Markdown: startswith
+
 
 function main(input_folder_path::String, longform_file_name::String, outputfolder_path::String; texfilesfolder="./latex_files/", imgfilefolder="Files", main_doc_template="", kwargs...)
     if !isdir(outputfolder_path)
@@ -146,31 +147,13 @@ function main(config_dict::Dict)
     main(config_dict[:input_folder_path], config_dict[:longform_file_name], config_dict[:output_folder_path]; config_dict...)
 end
 
-# if !(length(ARGS) in [3, 4])
-#     println("Usage: julia main.jl <input_folder> <longform_file_name> <output_folder_path> [<config_file_path>]")
-#     exit()
-# end
-
-#if length(ARGS) == 1
-
-ARGS = ["/Users/matthewscott/Documents/Journal_Uneven_Sampling/config.yaml"]
-scriptconfig = YAML.load_file(ARGS[1])
-if scriptconfig["ignore_quotes"]
-    @info "Ignoring quotes from config"
-    eval(quote
-        import Markdown: BlockQuote
-        function latex(io::IO, md::BlockQuote)
-            return ""
-        end
-    end)
+if length(ARGS) != 1
+    println("Usage: julia main.jl <path_to_config_file>")
+    exit()
 end
-scriptconfig = Dict(Symbol(key) => value for (key, value) in scriptconfig)
-main(scriptconfig)
-exit(1)
-#end
 
-if length(ARGS) == 4
-    scriptconfig = YAML.load_file(ARGS[4])
+if length(ARGS) == 1
+    scriptconfig = YAML.load_file(ARGS[1])
     if scriptconfig["ignore_quotes"]
         @info "Ignoring quotes from config"
         eval(quote
@@ -180,18 +163,12 @@ if length(ARGS) == 4
             end
         end)
     end
+    scriptconfig = Dict(Symbol(key) => value for (key, value) in scriptconfig)
+    main(scriptconfig)
+    exit(1)
 end
 
-scriptconfig = YAML.load_file("./config.YAML")
-if scriptconfig["ignore_quotes"]
-    @info "Ignoring Markdown Quotes, change the Config if this is not desired."
-    eval(quote
-        import Markdown: BlockQuote
-        function latex(io::IO, md::BlockQuote)
-            return ""
-        end
-    end)
-end
+
 
 #main("../../Ik-Vault/Zettelkasten/", "Sub-Gaussian McDiarmid Inequality and Classification on the Sphere", "./examples/output/project555_output/")
 #main("./examples/", "main_note", "./examples/output/example_output/"; texfilesfolder="./latex_files/")
