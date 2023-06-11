@@ -147,7 +147,7 @@ function main(config_dict::Dict)
     main(config_dict[:input_folder_path], config_dict[:longform_file_name], config_dict[:output_folder_path]; config_dict...)
 end
 
-if length(ARGS) != 1
+if !(length(ARGS) in (0, 1))
     println("Usage: julia main.jl <path_to_config_file>")
     exit()
 end

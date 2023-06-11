@@ -30,8 +30,13 @@ The config file is a YAML file that contains the following fields:
 - `output_folder_path`: path to the folder where the output files will be written. It will be created if it does not exist.
 - `longform_file_name`: name of the file to treat as the main document. It should be in the input folder. This field should not be a path, and not include the file extension. If the file has path `.../input_folder/longform.md`, then the field should be `longform`.
 
+## Known Limitations
+There are two main limitations:
+1. An embed link that is not on a new line. It will throw an error.
+2. Repeated Embeds: if a file embedded multiple times, it will revert all but the first embed to a wikilink. This limitation happens in order to have well-defined references.
+
 ## Supported Elements
-Most markdown elements that you can find in the obsidian are supported. A notable exception is an embed link that is not on a new line. It will throw an error.
+Most markdown elements that you can find in the obsidian are supported. 
 ### Markdown headers 
 h1 headers become Latex sections h2 and onwards become subsections.
 
