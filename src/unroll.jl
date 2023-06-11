@@ -51,7 +51,10 @@ function find_heading_content(note::MD, heading::String; removecontent=false)
             push!(headercontent, element)
         end
     end
-    lastindex = lastindex == 0 ? length(note.content) : lastindex
+    if headerindex == 0 # header not found
+        return nothing
+    end
+    lastindex = lastindex == 0 ? length(note.content) : lastindex # if the end of the file was reached, put last index at the end
     if removecontent
         deleteat!(note.content, headerindex:lastindex)
     end

@@ -19,6 +19,11 @@ mutable struct InlineLaTeX
     formula::String
 end
 
+import Base: lowercase
+function lowercase(s::InlineLaTeX)
+    return lowercase(s.formula)
+end
+
 function latexinline(io::IO, tex::InlineLaTeX)
     print(io, '$', tex.formula, '$')
 end

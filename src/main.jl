@@ -26,7 +26,9 @@ function main(input_folder_path::String, longform_file_name::String, outputfolde
 
     metadata, unrolledcontent = unrolledmainfile(input_folder_path, longform_file_name; filefolder=imgfilefolder, outfolder=outputfolder_path)
     abstract = find_heading_content(unrolledcontent, "Abstract"; removecontent=true)
-    appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true) |> reduceallheaders
+    appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true)
+    appendix = isnothing(appendix) ? nothing : reduceallheaders(appendix)
+
     # merge!(metadata, YAML.load_file(configfile_path))
     f = open(joinpath(outputfolder_path, "output.tex"), write=true, create=true)
 
@@ -37,6 +39,9 @@ function main(input_folder_path::String, longform_file_name::String, outputfolde
             replaceinfile(joinpath(outputfolder_path, "output.tex"), "\$abstract\$", abstract)
         end
         replaceinfile(joinpath(outputfolder_path, "output.tex"), "\$body\$", unrolledcontent)
+        if !isnothing(appendix)
+            replaceinfile(joinpath(outputfolder_path, "output.tex"), "\$appendix\$", appendix)
+        end
     else
         write(
             f,
@@ -146,21 +151,23 @@ end
 #     exit()
 # end
 
-if length(ARGS) == 1
-    scriptconfig = YAML.load_file(ARGS[1])
-    if scriptconfig["ignore_quotes"]
-        @info "Ignoring quotes from config"
-        eval(quote
-            import Markdown: BlockQuote
-            function latex(io::IO, md::BlockQuote)
-                return ""
-            end
-        end)
-    end
-    scriptconfig = Dict(Symbol(key) => value for (key, value) in scriptconfig)
-    main(scriptconfig)
-    exit(1)
+#if length(ARGS) == 1
+
+ARGS = ["/Users/matthewscott/Documents/Journal_Uneven_Sampling/config.yaml"]
+scriptconfig = YAML.load_file(ARGS[1])
+if scriptconfig["ignore_quotes"]
+    @info "Ignoring quotes from config"
+    eval(quote
+        import Markdown: BlockQuote
+        function latex(io::IO, md::BlockQuote)
+            return ""
+        end
+    end)
 end
+scriptconfig = Dict(Symbol(key) => value for (key, value) in scriptconfig)
+main(scriptconfig)
+exit(1)
+#end
 
 if length(ARGS) == 4
     scriptconfig = YAML.load_file(ARGS[4])
