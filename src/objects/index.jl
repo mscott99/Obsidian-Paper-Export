@@ -15,6 +15,10 @@ include("figure.jl")
 include("quotes.jl")
 include("citations.jl")
 
+function latexinline(io::IO, obj::Union{Paragraph, Vector, Environment, Citation, Code, Figure, <:LabeledHeader})
+    @error("The following object is not an inline object but is treated as inline.", obj, "\n Make sure Objects that are not inline are not contained within a paragraph in your Markdown note; put them on a new line.")
+end
+
 function latex(io::IO, md::Paragraph; kwargs...)
     for mdc in md.content
         latexinline(io, mdc; kwargs...)

@@ -94,7 +94,7 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
 end
 
 import Markdown: latex
-function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition"], kwargs...)
+function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition", "lemma", "corollary"], kwargs...)
     if env.environmentname == "proof"
         #targetlabel = match(r"(?:[^\:]+):(.*)", env.label)[1]
         wrapblock(io, env.environmentname, "\\hypertarget{proof:$(lowercase(env.originalfile))}Proof of \\autoref{$(lowercase(env.originalfile))}") do
