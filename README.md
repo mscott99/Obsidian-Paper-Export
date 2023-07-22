@@ -2,6 +2,11 @@
 
 This project exports an Obsidian note to a LaTeX math academic paper, retaining embeds as proofs and results. The main feature is to embed contents through Obsidian wikilinks from other local files.
 
+## State of the Project
+This project is in a very early stage, only tested on projects of the author.
+
+It is reccommended to contact the author at the first problem when attempting to use this project.
+
 ## Usage
 1. install julia: use [juliaup](https://github.com/JuliaLang/juliaup).
 
@@ -33,7 +38,8 @@ The config file is a YAML file that contains the following fields:
 ## Known Limitations
 There are two main limitations:
 1. An embed link that is not on a new line. It will throw an error.
-2. Repeated Embeds: if a file embedded multiple times, it will revert all but the first embed to a wikilink. This limitation happens in order to have well-defined references.
+2. Display math symbols in the markdown should be on a new line (no \$\$ ... \$\$ inline).
+3. Repeated Embeds: if a file embedded multiple times, it will revert all but the first embed to a wikilink. This limitation is intentional; it allows for well-defined references.
 
 ## Supported Elements
 Most markdown elements that you can find in the obsidian are supported. 
@@ -68,7 +74,7 @@ See the [exported markdown file](examples/main_note.md). It produces barebones l
 
 Page 1 |   Page 2 
 :-------------------------:|:-------------------------:
-![output sample](examples/output/example_output/output_page-0001.jpg)  |  ![output sample](examples/output/example_output/output_page-0002.jpg)
+![output sample](example/output_images/output_page-0001.jpg)  |  ![output sample](example/output_images/output_page-0002.jpg)
 # Aknowledgement
 
 See also the Obsidian-to-latex repository in python for an alternative implementation with a different focus.
