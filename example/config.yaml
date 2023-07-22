@@ -1,0 +1,5 @@
+main_doc_template: "./example/template.tex"
+ignore_quotes: true
+input_folder_path: "./example/markdown_source"
+longform_file_name: "main_note"
+output_folder_path: "./example/tex_output/"

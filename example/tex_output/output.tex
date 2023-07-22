@@ -2,11 +2,46 @@
 \input{header}
 \input{preamble.sty}
 \addbibresource{bibliography.bib}
-\title{main\_note}
-\author{Matthew Scott}
+
+\title{Unevenly Fourier}
+% \author{%
+%   Aaron Berk\\
+%   Department of Mathematics and Statistics\\
+%   McGill University\\
+%   Montr\'eal, QC, Canada\\
+%   \texttt{aaron.berk@mcgill.ca}
+%   \And
+%   Simone Brugiapaglia\\
+%   Department of Mathematics and Statistics\\
+%   Concordia University\\
+%   Montr\'eal, QC, Canada\\
+%   \texttt{simone.brugiapaglia@concordia.ca}
+%   \And
+%   % Yaniv Plan% \\
+%   % % \texttt{yaniv@math.ubc.ca}
+%   % \And
+%   % Matthew Scott\thanks{Corresponding author}% \\
+%   % % \texttt{matthewscott@math.ubc.ca}
+%   % \And
+%   % Summer Sheng% \\
+%   % % \texttt{xsheng@math.ubc.ca}
+%   % \And
+%   % \"{O}zg\"{u}r Y\i{}lmaz % \\
+%   % % \texttt{oyilmaz@math.ubc.ca}
+%   % \And
+%   % % \\[-2.5em]
+%   Yaniv Plan $\qquad$ Matthew Scott\thanks{Corresponding author} $\qquad$ Xia Sheng $\qquad$ \"{O}zg\"{u}r Y\i{}lmaz\\
+%   Department of Mathematics\\
+%   University of British Columbia\\
+%   Vancouver, BC, Canada\\
+%   \texttt{\{yaniv, matthewscott, xsheng, oyilmaz\}@math.ubc.ca}
+% }
+
 \begin{document}
 \maketitle
-\abstract{This is a simple example to showcase the Obsidian to LaTeX converter.
+\abstract{
+  This is a simple example to showcase the Obsidian to LaTeX converter.
+
 
 }
 \section{Introduction}
@@ -14,6 +49,7 @@
 This document demonstrates the conversion of Markdown notes to a LaTeX document, including internal links and embedded content.
 
 \begin{figure}[h]
+\label{download.jpeg}
 \centering
 \includegraphics[width=0.5\textwidth]{Files/download.jpeg}
 \caption{This is the caption}
@@ -23,23 +59,23 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 
 
 \begin{align*}
-  \|\hat x - x_0\|_2
-  \leq \|x^\perp\|_2 + 3\|\tilde{F}x^\perp\|_2 + 3 \|\eta\|_2 + \frac{3}{2}\hat\varepsilon.
+\|\hat x - x_0\|_2
+\leq \|x^\perp\|_2 + 3\|\tilde{F}x^\perp\|_2 + 3 \|\eta\|_2 + \frac{3}{2}\hat\varepsilon.
 \end{align*}
-Here is some $\sum a_i$. Reference: \autoref{lemma_1}.
+Here is some $\sum a_i$. Reference: \hyperlink{proof:lemma_1}{the proof}.
 
 $$\sum_{i=1}^k A_i$$
 $$\sum_{i=1}^n A_3$$
 $$\sum_{i=1}^n A_3$$
 We present the following lemma:
 
-\begin{lemma}
+\begin{lemma}[lemma_1]
 \label{lemma_1}
 Every even integer greater than 2 can be expressed as the sum of two prime numbers.
 
 \end{lemma}
 
-\begin{proof}[Proof of \autoref{lemma_1}]
+\begin{proof}[\hypertarget{proof:lemma_1}Proof of \autoref{lemma_1}]
 \label{proof:lemma_1}
 This is Goldbach's Conjecture, which remains unproven as of the knowledge cutoff date (2021-09).
 
@@ -47,7 +83,7 @@ This is Goldbach's Conjecture, which remains unproven as of the knowledge cutoff
 
 The main theorem is:
 
-\begin{theorem}
+\begin{theorem}[theorem_1]
 \label{theorem_1}
 For every positive integer $n$, the sum of the first $n$ odd integers is equal to $n^2$.
 
@@ -64,6 +100,7 @@ Base case ($n = 1$): The sum of the first odd integer (1) is equal to $1^2$, whi
 Inductive step: Assume that the sum of the first $k$ odd integers is equal to $k^2$. We want to show that the sum of the first $k+1$ odd integers is equal to $(k+1)^2$.
 
 The sum of the first $k$ odd integers is $k^2$. The next odd integer is $(2k+1)$. Therefore, the
+
 
 \printbibliography
 \end{document}
