@@ -16,25 +16,20 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 > a quote; ignore it
 >
 $$
+Given suitable definitions, the following follows.
 \begin{align*}
   \|\hat x - x_0\|_2
   \leq \|x^\perp\|_2 + 3\|\tilde{F}x^\perp\|_2 + 3 \|\eta\|_2 + \frac{3}{2}\hat\varepsilon.
 \end{align*}
 $$
 
-Here is some $\sum a_i$. Reference: [[lemma_1#Proof]].
+where $\sum a_i = 0$. See~[[lemma_1#Proof]].
 
-```math
+$$
 \sum_{i=1}^k A_i
-```
-
-$$\sum_{i=1}^n A_3$$
-
-$$
-\sum_{i=1}^n A_3
 $$
 
-We present the following lemma:
+We also present the following lemma:
 
 lemma::![[lemma_1#Statement]]
 
