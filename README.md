@@ -2,10 +2,12 @@
 
 This project exports an Obsidian note to a LaTeX math academic paper, retaining embeds as proofs and results. The main feature is to embed contents through Obsidian wikilinks from other local files.
 
+This program takes a single obsidian-style markdown note and converts it to latex. If the note has a header named "Body", it will take the content below that header instead. The program will convert obsidian elements to latex elements.
+
 ## State of the Project
 This project is in a very early stage, only tested on projects of the author.
 
-It is reccommended to contact the author at the first problem when attempting to use this project.
+It is recommended to contact the author at the first problem when attempting to use this project.
 
 ## Usage
 1. install julia: use [juliaup](https://github.com/JuliaLang/juliaup).
@@ -20,7 +22,7 @@ It is reccommended to contact the author at the first problem when attempting to
     ```
 3. Clone this repository.
 4. Make a config file as described [below](#config-file).
-5. Optionally, add header and bibliography files to the output folder that is specified in the config file.
+5. Optionally, add header and bibliography files to the output folder specified in the config file.
 6. In a terminal, navigate to the repository folder and run the script:
     ```zsh
     julia ./src/main.jl <config_file_path>
