@@ -8,11 +8,17 @@ end
 @trigger '[' ->
   function citation(stream::IO, block::MD)
     withstream(stream) do
-      skipblank(stream) # for explicit calls
-      label = ""
+      skipwhitespace(stream) # for explicit calls
       addresses = []
-      if startswith(stream, "[") && !startswith(stream, "@")
-        label = readuntil(stream, ']')
+      label = withstream(stream) do
+        if startswith(stream, "[") && !startswith(stream, "[")
+          return readuntil(stream, ']')
+        else
+          return nothing
+        end
+      end
+      if isnothing(label)
+        label = ""
       end
       while !((nextAddress = parse_citation_wikilink(stream, block)) |> isnothing)
         push!(addresses, nextAddress)
@@ -34,9 +40,9 @@ end
 
 function parse_citation_wikilink(stream::IO, block::MD)
   withstream(stream) do
-    skipblank(stream) # for explicit calls
+    skipwhitespace(stream) # for explicit calls
     if startswith(stream, "[[@")
-      return wikilink_content(stream, block, false).address
+      return readuntil(stream, "]]")
     elseif startswith(stream, "[@")
       return readuntil(stream, ']') # not sure about what happens here if no closing bracket
     else
