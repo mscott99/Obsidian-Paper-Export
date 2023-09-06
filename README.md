@@ -65,9 +65,14 @@ Figures are created from embed links referencing an image file. They are recogni
 
 Images will be copied to a folder "Files" in the output latex folder.
 
+### Citations
+Citations are wikilinks starting with the '@' character. Markdown citations are also supported. Citations can also have labels, in which case they look like `[<label>][[@<bibtex_key_1>]][[@<bibtex_key_2>]]` and gives an output of `\cite[<label>]{<bibtex_key_1>, <bibtex_key_2>}`.
+
+This item is made to work with either markdown citations or either the "Zotero Integration" or the "Citations" plugin in Obsidian. Support is only tested for the wikilink format.
+
 ## Markdown Note Structure
 
-I suggest to put each relevant result into its own note with a h1 header "Statement" and one h1 header "Proof"; and possibly one #Remark.
+I suggest to put each relevant result into its own note with a h1 header "statement" and one h1 header "Proof"; and possibly one #Remark.
 
 To omit information at the end of files, use a line break `---`, and insert the information after. Only dashed line breaks will be considered for this.
 
