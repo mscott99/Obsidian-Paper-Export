@@ -51,6 +51,7 @@ end
 
             #explicit environment
             while !eof(stream)
+                skipwhitespace(stream)
                 if startswith(stream, "::$environmentname")
                     push!(block, env)
                     return true
