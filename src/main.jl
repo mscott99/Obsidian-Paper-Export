@@ -28,7 +28,7 @@ function generate_latex(input_folder_path::String, longform_file_name::String, o
   appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true)
   appendix = isnothing(appendix) ? nothing : reduceallheaders(appendix)
 
-  body = find_heading_content(unrolledcontent, "Body")
+  body = reduceallheaders(find_heading_content(unrolledcontent, "Body"))
   if isnothing(body)
     body = unrolledcontent
   end
