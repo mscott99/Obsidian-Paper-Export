@@ -5,7 +5,7 @@ include("./objects/index.jl")
 include("utils.jl")
 include("unroll.jl")
 
-function generate_latex(input_folder_path::String, longform_file_name::String, outputfolder_path::String; texfilesfolder="./latex_files/", imgfilefolder="Files", main_doc_template="", kwargs...)
+function generate_latex(folder_base::String, longform_file_name::String, outputfolder_path::String; texfilesfolder="./latex_files/", imgfilefolder="Files", main_doc_template="", kwargs...)
   if !isdir(outputfolder_path)
     mkdir(outputfolder_path)
   end
@@ -23,7 +23,7 @@ function generate_latex(input_folder_path::String, longform_file_name::String, o
       cp(joinpath(texfilesfolder, "bibliography.bib"), joinpath(outputfolder_path, "bibliography.bib"))
     end
   end
-  metadata, unrolledcontent = unrolledmainfile(input_folder_path, longform_file_name; filefolder=imgfilefolder, outfolder=outputfolder_path)
+  metadata, unrolledcontent = unrolledmainfile(folder_base, longform_file_name; filefolder=imgfilefolder, outfolder=outputfolder_path)
   abstract = find_heading_content(unrolledcontent, "Abstract"; removecontent=true)
   appendix = find_heading_content(unrolledcontent, "Appendix"; removecontent=true)
   appendix = isnothing(appendix) ? nothing : reduceallheaders(appendix)
@@ -106,7 +106,6 @@ function checkConfigIsValid(config_dict::Dict{Symbol,Any})
   end
 end
 
-
 if length(ARGS) == 1
   scriptconfig = YAML.load_file(ARGS[1])
   if scriptconfig["ignore_quotes"]
@@ -123,10 +122,3 @@ if length(ARGS) == 1
   generate_latex(scriptconfig[:input_folder_path], scriptconfig[:longform_file_name], scriptconfig[:output_folder_path]; scriptconfig...)
   exit(1)
 end
-
-#main("../../Ik-Vault/Zettelkasten/", "Sub-Gaussian McDiarmid Inequality and Classification on the Sphere", "./examples/output/project555_output/")
-#main("./examples/", "main_note", "./examples/output/example_output/"; texfilesfolder="./latex_files/")
-#main("../../myVault/Zettelkasten/", "Journal Sample Longform", "./examples/output/journal1/")
-#main("./myVault/Zettelkasten/", "./myVault/Zettelkasten/Uneven Sampling Journal Version Longform.md", "./export_markdown/Obsidian\ Paper\ Export/examples/output/uneven_journal/"; output_file_name="Uneven Sampling Journal Version.tex", img_folder_name="Files")
-#main("../../myVault/Zettelkasten/", "Longform Conference Uneven Sampling", "./testout");
-

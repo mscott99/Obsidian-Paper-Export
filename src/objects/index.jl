@@ -24,7 +24,6 @@ function latex(io::IO, md::Paragraph; kwargs...)
         latexinline(io, mdc; kwargs...)
     end
     println(io)
-    println(io)
 end
 
 function latex(io::IO, content::Vector; kwargs...)

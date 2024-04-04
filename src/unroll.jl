@@ -1,15 +1,13 @@
-
+include("utils.jl")
 function unrolledmainfile(notesfolder::String, mainfile::String; kwargs...)
     @assert isdir(notesfolder) "Notes folder does not exist: $notesfolder"
-    @assert isfile(joinpath(notesfolder, mainfile * ".md")) "Main file does not exist"
-    f = open(joinpath(notesfolder, mainfile * ".md"))
+    mainfile_path = find_file(notesfolder, mainfile * ".md") 
+    @assert !isempty(mainfile_path) "Main file $mainfile not found in vault $notesfolder"
+    f = open(mainfile_path)
     md = parse(f, yamlparser; dropfirst=false)
     close(f)
-
     metadata = md.content[1] isa YAMLHeader ? popfirst!(md.content).content : Dict()
-
     globalstate = Dict{Symbol,Any}(:environments => Set{Tuple}()) #ids of environments
-
     merge!(globalstate, kwargs)
     if !haskey(globalstate, :maxdepth)
         globalstate[:maxdepth] = 10

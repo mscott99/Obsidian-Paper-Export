@@ -6,11 +6,11 @@ end
 InnerLabeledHeader(label::String, header, l) = InnerLabeledHeader(label, Header(header.text, l))
 
 function latex(io::IO, header::InnerLabeledHeader)
-  # latex(io, header.header)
-  wrapinline(io, "emph") do
-    print(io, escape_latex(header.header.text[1]))
-  end
-  println(io)
+  latex(io, header.header)
+  # wrapinline(io, "emph") do
+  #   print(io, escape_latex(header.header.text[1]))
+  # end
+  # println(io)
   # No support for labels yet.
 
   # wrapinline(io, "label") do
@@ -28,7 +28,7 @@ LabeledHeader(label::String, header, l::Int) = LabeledHeader(label, Header(heade
 function latex(io::IO, header::LabeledHeader)
   latex(io, header.header)
   wrapinline(io, "label") do
-    print(io, header.label)
+    print(io, "sec:"*header.label)
   end
   println(io)
 end

@@ -85,6 +85,14 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
         return [Paragraph([wikilink])] # wikilink must be inline.
     end
 
+    # Case of a repeated embed. We change it to a reference.
+    if length(elt.content) == 1 && elt.content[1] isa Wikilink && elt.content[1].embed && (elt.content[1].address, elt.content[1].header) in globalstate[:environments]
+        @warn "Repeated embed detected for $(elt.content[1].address) $(elt.content[1].header), ignoring environment and reverting it to reference."
+        local wikilink = elt.content[1]
+        wikilink.embed = false
+        return [Paragraph([wikilink])]
+    end
+
     outarray = []
     for element in elt.content.content
         push!(outarray, unroll(element, notesfolder, currentfile, globalstate, depth)...)
@@ -95,26 +103,27 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
 end
 
 import Markdown: latex
+include("../utils.jl")
 function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition", "lemma", "corollary"], kwargs...)
     if env.environmentname == "proof"
         #targetlabel = match(r"(?:[^\:]+):(.*)", env.label)[1]
-        wrapblock(io, env.environmentname, "\\hypertarget{proof:$(lowercase(env.originalfile))}Proof of \\autoref{$(lowercase(env.originalfile))}") do
+        wrapblock(io, env.environmentname, "\\hypertarget{proof:$(lowercase(env.originalfile))}Proof of \\autoref{$(lowercase(escape_label(env.originalfile)))}") do
             if env.label != ""
-                println(io, "\\label{$(env.label)}")
+                println(io, "\\label{$(escape_label(env.label))}")
             end
             latex(io, env.content)
         end
     elseif env.environmentname in display_name_of_envs
         wrapblock(io, env.environmentname, env.originalfile) do
             if env.label != ""
-                println(io, "\\label{$(env.label)}")
+                println(io, "\\label{$(escape_label(env.label))}")
             end
             latex(io, env.content)
         end
     else
         wrapblock(io, env.environmentname) do
             if env.label != ""
-                println(io, "\\label{$(env.label)}")
+                println(io, "\\label{$(escape_label(env.label))}")
             end
             latex(io, env.content)
         end

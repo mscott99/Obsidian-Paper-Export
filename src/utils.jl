@@ -72,3 +72,52 @@ function escape_latex(text::String)
     )
     return replace(text, replacements...)
 end
+
+function escape_label(text::String)
+    replacements = (
+        '-' => "_",
+        ' ' => "_",
+        '(' => "",
+        ')' => "",
+        ',' => "",
+    )
+    return replace(text, replacements...)
+end
+
+"""
+find_file(folder_path::String, file_name::String)
+
+Searches recursively in the folder_path for a file with name file_name.
+If the file name is a path, we understand it as a relative path from folder_path.
+"""
+function find_file(folder_path::String, file_name::String)
+    if contains(file_name, '/')
+        tentative_path = joinpath(folder_path, file_name)
+        if !isfile(tentative_path)
+            @error "File $(tentative_path) is not a file"
+            return ""
+        end
+        return tentative_path
+    end
+    # Search by file name recursively
+    file_found = false
+    found_file_path = ""
+    try
+        for (root, dirs, files) in walkdir(folder_path)
+            if file_name in files
+                if file_found
+                    @warn "Multiple files with the name $file_name found in $folder_path"
+                else
+                    file_found = true
+                    found_file_path = joinpath(root, file_name)
+                end
+            end
+        end
+    catch e
+        @error "Error while searching in folder $folder_path: $e"
+    end
+    if !file_found
+        @warn "File $file_name not found in $folder_path"
+    end
+    return found_file_path
+end

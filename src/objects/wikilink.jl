@@ -86,7 +86,7 @@ function unroll(elt::Wikilink, notesfolder::String, currentfile::String, globals
         return [Paragraph([elt])] # non-embed wikilinks are inline.
     end
 
-    filepath = joinpath(notesfolder, elt.address * ".md")
+    filepath = find_file(notesfolder, elt.address* ".md")
     if !isfile(filepath)
         @warn "File $filepath does not exist"
         elt.embed = false
@@ -141,7 +141,7 @@ function latexinline(io::IO, link::Wikilink)
         return
     end
     if link.displaytext |> isempty
-        print(io, "\\autoref{$(lowercase(link.address))}")
+        print(io, "\\autoref{$(lowercase(escape_label(link.address)))}")
         return
     else
         println(io, "$(link.displaytext)\\ref{$(lowercase(link.address))}")
@@ -154,13 +154,17 @@ function latexinline(io::IO, link::Wikilink; refs_with_display_text=false, kwarg
         show(io, link)
         return
     end
+    if link.address |> isempty && link.displaytext |> isempty
+        print(io, "\\autoref{sec:$(lowercase(escape_label(link.header)))}")
+        return
+    end
     if link.displaytext |> isempty
         if link.header == "Proof"
-            # print(io, "\\autoref{proof:$(lowercase(link.address))}")
-            print(io, "\\hyperlink{proof:$(lowercase(link.address))}{the proof}")
+            # print(io, "\\autoref{proof:$(lowercase(escape_label(link.address)))}")
+            print(io, "\\hyperlink{proof:$(lowercase(escape_label(link.address)))}{the proof}")
             return
         end
-        print(io, "\\autoref{$(lowercase(link.address))}")
+        print(io, "\\autoref{$(lowercase(escape_label(link.address)))}")
         return
     end
     print(io, "$(link.displaytext)")
@@ -171,23 +175,8 @@ function latexinline(io::IO, link::Wikilink; refs_with_display_text=false, kwarg
 end
 
 function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
-    if link.embed
-        show(io, link)
-        println(io)
-        return
-    end
-    if link.displaytext |> isempty
-        if link.header == "Proof"
-            println(io, "\\autoref{proof:$(lowercase(link.address))}")
-            return
-        end
-        println(io, "\\autoref{$(lowercase(link.address))}")
-        return
-    end
-    print(io, "$(link.displaytext)")
-    if refs_with_display_text
-        print(io, "\\ref{$(lowercase(link.address))}")
-    end
+    """Only deals with Wikilinks that are left over from previous processing."""
+    latexinline(io, link; refs_with_display_text=refs_with_display_text, kwargs...)
     println(io)
 end
 
@@ -199,7 +188,7 @@ end
 #         return
 #     end
 #     if link.displaytext |> isempty
-#         println(io, "\\autoref{$(lowercase(link.address))}")
+#         println(io, "\\autoref{$(lowercase(escape_label(link.address)))}")
 #         return
 #     else
 #         print(io, "$(link.displaytext)")
@@ -217,7 +206,7 @@ end
 #         return
 #     end
 #     if link.displaytext |> isempty
-#         println(io, "\\autoref{$(link.address)}")
+#         println(io, "\\autoref{$(escape_label(link.address))}")
 #         return
 #     else
 #         println(io, "$(link.displaytext)\\ref{$(link.address)}")
