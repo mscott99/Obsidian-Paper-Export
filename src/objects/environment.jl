@@ -3,10 +3,8 @@ mutable struct Environment
     environmentname::String
     originalfile::String
     originalheader::String
-    label::String
-    function Environment(content::MD, environmentname::String, originalfile::String="", originalheader::String="", label::String="")
-        label = isempty(label) ? lowercase(originalfile) : label
-        return new(content, environmentname, originalfile, originalheader, label)
+    function Environment(content::MD, environmentname::String, originalfile::String="", originalheader::String="")
+        return new(content, environmentname, originalfile, originalheader)
     end
 end
 
@@ -71,12 +69,12 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
     end
 
     # If file was not already given by the address of a wikilink.
-    if elt.label |> isempty && !isempty(elt.originalfile)
-        elt.label = lowercase(elt.originalfile)
-        if elt.environmentname == "proof"
-            elt.label = "proof:" * elt.label
-        end
-    end
+    # if elt.label |> isempty && !isempty(elt.originalfile)
+    #     elt.label = lowercase(elt.originalfile)
+    #     if elt.environmentname == "proof"
+    #         elt.label = "proof:" * elt.label
+    #     end
+    # end
 
     # Case where this is a link with an attribute, revert from environment to wikilink with attribute.
     if length(elt.content) == 1 && elt.content[1] isa Wikilink && !elt.content[1].embed
@@ -102,29 +100,31 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
     return [elt]
 end
 
+function print_label_command(io::IO, elt::Environment)
+    if elt.originalfile |> isempty # Then the env gets no label.
+        return
+    end
+    println(io, "\\label{$(get_location_label(elt.originalfile, elt.originalheader))}")
+end
+
 import Markdown: latex
 include("../utils.jl")
 function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition", "lemma", "corollary"], kwargs...)
     if env.environmentname == "proof"
         #targetlabel = match(r"(?:[^\:]+):(.*)", env.label)[1]
-        wrapblock(io, env.environmentname, "\\hypertarget{proof:$(lowercase(env.originalfile))}Proof of \\autoref{$(lowercase(escape_label(env.originalfile)))}") do
-            if env.label != ""
-                println(io, "\\label{$(escape_label(env.label))}")
-            end
+        @assert !isempty(env.originalfile) "Cannot make a label for an environment without a known origin file."
+        wrapblock(io, env.environmentname, "\\hypertarget{$(get_location_label(env.originalfile, env.originalheader))}Proof of \\autoref{$(get_location_label(env.originalfile, "statement"))}") do
+            print_label_command(io, env)
             latex(io, env.content)
         end
     elseif env.environmentname in display_name_of_envs
         wrapblock(io, env.environmentname, env.originalfile) do
-            if env.label != ""
-                println(io, "\\label{$(escape_label(env.label))}")
-            end
+            print_label_command(io, env)
             latex(io, env.content)
         end
     else
         wrapblock(io, env.environmentname) do
-            if env.label != ""
-                println(io, "\\label{$(escape_label(env.label))}")
-            end
+            print_label_command(io, env)
             latex(io, env.content)
         end
     end

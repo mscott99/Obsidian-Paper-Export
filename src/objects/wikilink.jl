@@ -1,11 +1,11 @@
 mutable struct Wikilink
     address::String
+    embed::Bool
     header::String
     displaytext::String
-    embed::Bool
     attribute::String
-    Wikilink(address::String, header::String, displaytext::String, embed::Bool, attribute::String="") =
-        new(address, header, displaytext, embed, attribute)
+    Wikilink(address::String, embed::Bool, header::String="", displaytext::String="", attribute::String="") =
+        new(address, embed, header, displaytext, attribute)
 end
 
 @trigger '!' ->
@@ -28,7 +28,6 @@ end
             end
         end
     end
-
 
 @breaking true ->
     function embedwikilink(stream::IO, block::MD)
@@ -63,11 +62,7 @@ function wikilink_content(stream::IO, block::MD, embed::Bool)
         end
         write(buffer, read(stream, Char))
     end
-    return Wikilink(String(take!(namebuffer)), String(take!(headerbuffer)), String(take!(displaybuffer)), embed)
-end
-
-function wikilink_label(elt::Wikilink)
-    return lowercase(elt.address)
+    return Wikilink(String(take!(namebuffer)), embed, String(take!(headerbuffer)), String(take!(displaybuffer)))
 end
 
 function unroll(elt::Wikilink, notesfolder::String, currentfile::String, globalstate::Dict, depth::Int)
@@ -135,81 +130,40 @@ end
 # fallback when no config.
 latexinline(io::IO, obj, config) = latexinline(io, obj)
 
-function latexinline(io::IO, link::Wikilink)
-    if link.embed
-        show(io, link)
-        return
-    end
-    if link.displaytext |> isempty
-        print(io, "\\autoref{$(lowercase(escape_label(link.address)))}")
-        return
-    else
-        println(io, "$(link.displaytext)\\ref{$(lowercase(link.address))}")
-        return
-    end
-end
-
 function latexinline(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
     if link.embed
         show(io, link)
         return
     end
-    if link.address |> isempty && link.displaytext |> isempty
+
+    # Display link
+    if !isempty(link.displaytext)
+        print(io, "$(link.displaytext)")
+        if refs_with_display_text
+            print(io, "\\ref{$(get_location_label(link.address, link.header))}")
+        end
+        return
+    end
+
+    # Local header link. Header links follow a different format.
+    if link.address |> isempty
         print(io, "\\autoref{sec:$(lowercase(escape_label(link.header)))}")
         return
     end
-    if link.displaytext |> isempty
-        if link.header == "Proof"
-            # print(io, "\\autoref{proof:$(lowercase(escape_label(link.address)))}")
-            print(io, "\\hyperlink{proof:$(lowercase(escape_label(link.address)))}{the proof}")
-            return
-        end
-        print(io, "\\autoref{$(lowercase(escape_label(link.address)))}")
+
+    # Proof link
+    if link.header == "Proof"
+        print(io, "\\hyperlink{$(get_location_label(link.address, link.header))}{the proof}")
         return
     end
-    print(io, "$(link.displaytext)")
-    if refs_with_display_text
-        print(io, "\\ref{$(lowercase(link.address))}")
-    end
+
+    # Reference link
+    print(io, "\\autoref{$(get_location_label(link.address, link.header))}")
     return
 end
 
+"""Only deals with Wikilinks that are left over from previous processing."""
 function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
-    """Only deals with Wikilinks that are left over from previous processing."""
     latexinline(io, link; refs_with_display_text=refs_with_display_text, kwargs...)
     println(io)
 end
-
-
-# function latex(io::IO, link::Wikilink; refs_with_display_text=false, kwargs...)
-#     if link.embed
-#         show(io, link)
-#         println(io)
-#         return
-#     end
-#     if link.displaytext |> isempty
-#         println(io, "\\autoref{$(lowercase(escape_label(link.address)))}")
-#         return
-#     else
-#         print(io, "$(link.displaytext)")
-#         if refs_with_display_text
-#             print(io, "\\ref{$(lowercase(link.address))}")
-#         end
-#         println(io)
-#         return
-#     end
-# end
-
-# function latex(io::IO, link::Wikilink)
-#     if link.embed
-#         println(io, "![[$(link.address)]]")
-#         return
-#     end
-#     if link.displaytext |> isempty
-#         println(io, "\\autoref{$(escape_label(link.address))}")
-#         return
-#     else
-#         println(io, "$(link.displaytext)\\ref{$(link.address)}")
-#         return
-#     end
-# end

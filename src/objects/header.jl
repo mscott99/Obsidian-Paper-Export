@@ -28,7 +28,7 @@ LabeledHeader(label::String, header, l::Int) = LabeledHeader(label, Header(heade
 function latex(io::IO, header::LabeledHeader)
   latex(io, header.header)
   wrapinline(io, "label") do
-    print(io, "sec:"*header.label)
+    print(io, "sec:"*lowercase(escape_label(header.label)))
   end
   println(io)
 end

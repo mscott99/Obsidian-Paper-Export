@@ -75,13 +75,20 @@ end
 
 function escape_label(text::String)
     replacements = (
-        '-' => "_",
         ' ' => "_",
         '(' => "",
         ')' => "",
         ',' => "",
     )
     return replace(text, replacements...)
+end
+
+# Labels that only rely on the place of origin of the content.
+# This design is motivated by reference links, which only provide this information.
+function get_location_label(file_title::String, header::String)
+    @assert !isempty(file_title) "Cannot make a label for an environment without a known origin file."
+    section = isempty(header) ? "statement" : header
+    return lowercase(escape_label(file_title * '-' * section))
 end
 
 """
