@@ -4,7 +4,7 @@
 # end
 
 include("main.jl")
-scriptconfig = YAML.load_file("/Users/matthewscott/Documents/Generative_Workshop/config.yaml")
+scriptconfig = YAML.load_file("./example/config.yaml")
 if scriptconfig["ignore_quotes"]
     @info "Ignoring quotes from config"
     eval(quote

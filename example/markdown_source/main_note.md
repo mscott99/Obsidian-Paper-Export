@@ -9,6 +9,9 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 
 ![[download.jpeg|This is the caption]]
 
+remark::
+  I remark that this plugin is awesome.
+::remark
 # Results
 
 #longform

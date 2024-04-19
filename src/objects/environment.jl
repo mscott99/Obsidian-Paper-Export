@@ -13,7 +13,6 @@ end
         withstream(stream) do
             startswith(stream, "::") && return false # we need a name for an environment
             envbuffer = IOBuffer()
-            envbuffer = IOBuffer()
             while true
                 eof(stream) && return false
                 startswith(stream, ' ') && return false
@@ -22,11 +21,9 @@ end
                 write(envbuffer, read(stream, Char))
             end
             environmentname = String(take!(envbuffer))
-
             skipwhitespace(stream)
             content = MD(config(block))
             env = Environment(content, environmentname)
-
             #embedded environment
             if startswith(stream, "![[", eat=false)
                 wikilinkobj = inline_embedwikilink(stream, content)
@@ -37,7 +34,6 @@ end
                 push!(block, env)
                 return true
             end
-
             # env that is a reference to a file
             if startswith(stream, "[[", eat=false)
                 wikilinkobj = wikilink(stream, content)
@@ -46,15 +42,18 @@ end
                 push!(block, env)
                 return true
             end
-
             #explicit environment
+            skipwhitespace(stream)
+            remark_buffer = IOBuffer()
             while !eof(stream)
-                skipwhitespace(stream)
                 if startswith(stream, "::$environmentname")
+                    remark_string = String(take!(remark_buffer))
+                    push!(content, Paragraph([remark_string]))
                     push!(block, env)
                     return true
                 end
-                parse(stream, content)
+                write(remark_buffer, read(stream, Char))
+                # parse(stream, content)
             end
             return false # environment was never closed; do not parse it.
         end
