@@ -10,6 +10,8 @@
 *.gz
 *.out
 example/template.pdf
+example/tex_output/output.tex
+example/tex_output/Files/
 examples/.obsidian/workspace.json
 examples/Obsidian Paper Export.code-workspace
 examples/.obsidian

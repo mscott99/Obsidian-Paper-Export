@@ -2,16 +2,20 @@
 This project exports an Obsidian note to a LaTeX math academic paper, retaining embeds as proofs and results. The main feature is to embed contents through Obsidian wikilinks from other local files.
 
 This program takes a single obsidian-style markdown note and converts it to latex. If the note has a header named "Body", it will take the content below that header instead. The program will convert obsidian elements to latex elements.
-
-## State of the Project
-This project has only been tested on projects of the author, bug reports are appreciated.
 ## Usage
 1. install julia: use [juliaup](https://github.com/JuliaLang/juliaup).
 2. Clone this repository.
 3. Copy the ./example subdirectory to use as boilerplate.
 4. Modify the `config.yaml` to point to the correct locations. See what those paths should be [below](#config-file).
-6. In a terminal, navigate to the `./example` repository folder and run `chmod +x ./export.zsh`. Then run it with `./export.zsh`.
-7. Alternatively, run the julia script directly:
+6. In a terminal, navigate to the example repository with 
+```
+cd ./Obsidian-Paper-Export/example
+```
+Then run it with 
+```
+./export.zsh
+```
+Alternatively, run the julia script directly:
     1. Set up a julia environment with the YAML package installed, or install it globally:
     ```
     julia -e "using Pkg; Pkg.add(\"YAML\")"
@@ -20,8 +24,12 @@ This project has only been tested on projects of the author, bug reports are app
     ```zsh
     julia ./path/to/main.jl ./path/to/config.yaml
     ```
-## What happens
+7. Copy the example directory for each new export.
+8. To edit the latex output, first copy it to some other place so that a future export will no overwrite it.
+## Export and Overwritting Behaviour
 Upon export, in the `example/tex_output/`, the `output.tex` file is overwritten as well as `example/tex_output/Files`, but other files `bibliography.bib` and `header.tex` are not overwritten. To manually edit the latex, you should copy the exported directory to another location.
+## State of the Project
+This project has only been tested on projects of the author, bug reports are appreciated.
 ## Config File
 The config file is a YAML file that contains the following fields:
 - `main_doc_template`: path to the latex template file for the main document. It should contain `$abstract` and `$body` placeholders.
