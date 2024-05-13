@@ -26,7 +26,7 @@ Given suitable definitions, the following follows.
 \end{align*}
 $$
 
-where $\sum a_i = 0$. See~[[lemma_1#Proof]].
+where $\sum a_i = 0$. See~[[lemma 1#Proof]].
 
 $$
 \sum_{i=1}^k A_i
@@ -34,15 +34,15 @@ $$
 
 We also present the following lemma:
 
-lemma::![[lemma_1#Statement]]
+lemma::![[lemma 1#Statement]]
 
-proof::![[lemma_1#Proof]]
+proof::![[lemma 1#Proof]]
 
 The main theorem is:
 
-theorem::![[theorem_1#Statement]]
+theorem::![[theorem 1#Statement]]
 
 # Proofs
-Here is the proof for the main theorem. The proof is specifically for [[theorem_1#Statement]]. I may or may not follow from [[@rudelsonSparseReconstructionFourier2008]].
+Here is the proof for the main theorem. The proof is specifically for [[theorem 1#Statement]]. I may or may not follow from [[@rudelsonSparseReconstructionFourier2008]].
 
-![[theorem_1#Proof]]
+![[theorem 1#Proof]]

@@ -1,39 +1,32 @@
 # Obsidian to LaTeX Math Academic Paper Exporter
-
 This project exports an Obsidian note to a LaTeX math academic paper, retaining embeds as proofs and results. The main feature is to embed contents through Obsidian wikilinks from other local files.
 
 This program takes a single obsidian-style markdown note and converts it to latex. If the note has a header named "Body", it will take the content below that header instead. The program will convert obsidian elements to latex elements.
 
 ## State of the Project
-This project is in a very early stage, only tested on projects of the author.
-
-It is recommended to contact the author at the first problem when attempting to use this project.
-
+This project has only been tested on projects of the author, bug reports are appreciated.
 ## Usage
 1. install julia: use [juliaup](https://github.com/JuliaLang/juliaup).
-
-2. Add the YAML package globally: in a terminal, run
-    ``` julia ``` to enter the julia REPL, then
-    ```julia
-    ] add YAML
+2. Clone this repository.
+3. Copy the ./example subdirectory to use as boilerplate.
+4. Modify the `config.yaml` to point to the correct locations. See what those paths should be [below](#config-file).
+6. In a terminal, navigate to the `./example` repository folder and run `chmod +x ./export.zsh`. Then run it with `./export.zsh`.
+7. Alternatively, run the julia script directly:
+    1. Set up a julia environment with the YAML package installed, or install it globally:
     ```
+    julia -e "using Pkg; Pkg.add(\"YAML\")"
     ```
-    exit()
-    ```
-3. Clone this repository.
-4. Make a config file as described [below](#config-file).
-5. Optionally, add header and bibliography files to the output folder specified in the config file.
-6. In a terminal, navigate to the repository folder and run the script:
+    2. 
     ```zsh
-    julia ./src/main.jl <config_file_path>
+    julia ./path/to/main.jl ./path/to/config.yaml
     ```
-    where `<config_file_path>` is the path to the config file you created.
-
+## What happens
+Upon export, in the `example/tex_output/`, the `output.tex` file is overwritten as well as `example/tex_output/Files`, but other files `bibliography.bib` and `header.tex` are not overwritten. To manually edit the latex, you should copy the exported directory to another location.
 ## Config File
 The config file is a YAML file that contains the following fields:
 - `main_doc_template`: path to the latex template file for the main document. It should contain `$abstract` and `$body` placeholders.
-- `ignore_quotes`: Whether to export quotes or ignore them. When ignoring them, quotes in markdown can be used to comment the markdown file without impacting the export.
-- `input_folder_path`: path to the folder containing the markdown files, including the files that are to be embedded by the main longform file. All files should be in a single folder, no sub-folders are supported.
+- `ignore_quotes`: Whether to export quotes or ignore them. When ignoring quotes, they can be used as comments.
+- `input_folder_path`: path to the folder containing the markdown files, including all files that are to be embedded by the main longform file. The files can be in any sub-directory of the input_folder_path.
 - `output_folder_path`: path to the folder where the output files will be written. It will be created if it does not exist.
 - `longform_file_name`: name of the file to treat as the main document. It should be in the input folder. This field should not be a path, and not include the file extension. If the file has path `.../input_folder/longform.md`, then the field should be `longform`.
 
@@ -41,15 +34,15 @@ The config file is a YAML file that contains the following fields:
 There are two main limitations:
 1. An embed link that is not on a new line. It will throw an error.
 2. Display math symbols in the markdown should be on a new line (no \$\$ ... \$\$ inline).
-3. Repeated Embeds: if a file embedded multiple times, it will revert all but the first embed to a wikilink. This limitation is intentional; it allows for well-defined references.
+3. Repeated embeds of the same file: if a file embedded multiple times, it will revert all but the first embed to a wikilink. This limitation is intentional: it allows for well-defined references.
 
 ## Supported Elements
-Most markdown elements that you can find in the obsidian are supported. 
+Most markdown elements that you can find in obsidian are supported. 
 ### Markdown headers 
 h1 headers become Latex sections h2 and onwards become subsections.
 
 ### Mathjax Math
-Obsidian-style math is recognized. Anything `$inline_math$`and `$$ display_math`. These are rendered by default with the `\begin{equation*}` environment. If an àlign`or àlign*` environment is within dollar signs, it will be rendered using the corresponding environment instead.
+Obsidian-style math is recognized. Anything `$inline_math$`and `$$ display_math$$`. These are rendered by default with the `\begin{equation*}` environment. If an `align` or `align*` environment is within dollar signs, it will be rendered using the corresponding environment instead.
 
 ### Note Embeds
 Transcribes the content of note referred to by an embed link at the location of the link, in a way that matches what is seen in the reading view. The transcription is recursive; an embed in an embed will be embedded. Embeddings of sections of notes will also be embedded.
@@ -81,7 +74,6 @@ See the [exported markdown file](examples/main_note.md). It produces barebones l
 
 Page 1 |   Page 2 
 :-------------------------:|:-------------------------:
-![output sample](example/output_images/output_page-0001.jpg)  |  ![output sample](example/output_images/output_page-0002.jpg)
-# Aknowledgement
-
+![output sample](output_images/output_page-0001.jpg)  |  ![output sample](output_images/output_page-0002.jpg)
+# Other projects
 See also the Obsidian-to-latex repository in python for an alternative implementation with a different focus.

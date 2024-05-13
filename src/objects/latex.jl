@@ -3,7 +3,7 @@ mutable struct DisplayLaTeX
 end
 
 function latex(io::IO, tex::DisplayLaTeX)
-    if match(r"\\begin{", tex.formula) !== nothing
+    if !isnothing(match(r"\\begin{", tex.formula)) && isnothing(match(r"\\begin{cases", tex.formula))
         println(io, tex.formula)
     else
         println(io, "\$\$", tex.formula, "\$\$")

@@ -1,41 +1,9 @@
 \documentclass{article}
-\input{header}
-\input{preamble.sty}
+\usepackage{biblatex}
+\include{header}
 \addbibresource{bibliography.bib}
 
-\title{Unevenly Fourier}
-% \author{%
-%   Aaron Berk\\
-%   Department of Mathematics and Statistics\\
-%   McGill University\\
-%   Montr\'eal, QC, Canada\\
-%   \texttt{aaron.berk@mcgill.ca}
-%   \And
-%   Simone Brugiapaglia\\
-%   Department of Mathematics and Statistics\\
-%   Concordia University\\
-%   Montr\'eal, QC, Canada\\
-%   \texttt{simone.brugiapaglia@concordia.ca}
-%   \And
-%   % Yaniv Plan% \\
-%   % % \texttt{yaniv@math.ubc.ca}
-%   % \And
-%   % Matthew Scott\thanks{Corresponding author}% \\
-%   % % \texttt{matthewscott@math.ubc.ca}
-%   % \And
-%   % Summer Sheng% \\
-%   % % \texttt{xsheng@math.ubc.ca}
-%   % \And
-%   % \"{O}zg\"{u}r Y\i{}lmaz % \\
-%   % % \texttt{oyilmaz@math.ubc.ca}
-%   % \And
-%   % % \\[-2.5em]
-%   Yaniv Plan $\qquad$ Matthew Scott\thanks{Corresponding author} $\qquad$ Xia Sheng $\qquad$ \"{O}zg\"{u}r Y\i{}lmaz\\
-%   Department of Mathematics\\
-%   University of British Columbia\\
-%   Vancouver, BC, Canada\\
-%   \texttt{\{yaniv, matthewscott, xsheng, oyilmaz\}@math.ubc.ca}
-% }
+\title{A great paper}
 
 \begin{document}
 \maketitle
@@ -54,7 +22,7 @@ This document demonstrates the conversion of Markdown notes to a LaTeX document,
 \end{figure}
 \begin{remark}
 \label{main_note-statement}
-I remark that this plugin is awsome.
+I remark that this plugin is awesome.
 
 \end{remark}
 
@@ -69,7 +37,7 @@ Given suitable definitions, the following follows.
 where $\sum a_i = 0$. See~\hyperlink{lemma_1-proof}{the proof}.
 $$\sum_{i=1}^k A_i$$
 We also present the following lemma:
-\begin{lemma}[lemma_1]
+\begin{lemma}[lemma 1]
 \label{lemma_1-statement}
 Every even integer greater than 2 can be expressed as the sum of two prime numbers.
 \end{lemma}
@@ -80,7 +48,7 @@ This is Goldbach's Conjecture, which remains unproven as of the knowledge cutoff
 \end{proof}
 
 The main theorem is:
-\begin{theorem}[theorem_1]
+\begin{theorem}[theorem 1]
 \label{theorem_1-statement}
 For every positive integer $n$, the sum of the first $n$ odd integers is equal to $n^2$.
 \end{theorem}
