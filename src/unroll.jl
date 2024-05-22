@@ -4,6 +4,7 @@ function unrolledmainfile(notesfolder::String, mainfile::String; kwargs...)
     mainfile_path = find_file(notesfolder, mainfile * ".md") 
     @assert !isempty(mainfile_path) "Main file $mainfile not found in vault $notesfolder"
     f = open(mainfile_path)
+    println("type of f: ", typeof(f))
     md = parse(f, yamlparser; dropfirst=false)
     close(f)
     metadata = md.content[1] isa YAMLHeader ? popfirst!(md.content).content : Dict()

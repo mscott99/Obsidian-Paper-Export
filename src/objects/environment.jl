@@ -47,13 +47,15 @@ end
             remark_buffer = IOBuffer()
             while !eof(stream)
                 if startswith(stream, "::$environmentname")
-                    remark_string = String(take!(remark_buffer))
-                    push!(content, Paragraph([remark_string]))
+                    inner_content = MD(obsidian)
+                    # for some reason I need the line below for the parsing to work.
+                    remark_buffer = IOBuffer(String(take!(remark_buffer)))
+                    while parse(remark_buffer, inner_content, obsidian) end
+                    env.content = inner_content
                     push!(block, env)
                     return true
                 end
                 write(remark_buffer, read(stream, Char))
-                # parse(stream, content)
             end
             return false # environment was never closed; do not parse it.
         end
@@ -89,14 +91,16 @@ function unroll(elt::Environment, notesfolder::String, currentfile::String, glob
         wikilink.embed = false
         return [Paragraph([wikilink])]
     end
-
-    outarray = []
-    for element in elt.content.content
-        push!(outarray, unroll(element, notesfolder, currentfile, globalstate, depth)...)
+    
+    if elt.content isa MD       outarray = []
+        for element in elt.content.content
+            push!(outarray, unroll(element, notesfolder, currentfile, globalstate, depth)...)
+        end
+        elt.content.content = outarray # content of env is of type MD
+        push!(globalstate[:environments], (elt.originalfile, elt.originalheader))
+        return [elt]
     end
-    elt.content.content = outarray # content of env is of type MD
-    push!(globalstate[:environments], (elt.originalfile, elt.originalheader))
-    return [elt]
+    throw(ArgumentError("Unexpected structure of environment"))
 end
 
 function print_label_command(io::IO, elt::Environment)
@@ -108,7 +112,7 @@ end
 
 import Markdown: latex
 include("../utils.jl")
-function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition", "lemma", "corollary"], kwargs...)
+function latex(io::IO, env::Environment; display_name_of_envs=["definition", "theorem", "proposition", "lemma", "corollary", "setup"], kwargs...)
     if env.environmentname == "proof"
         #targetlabel = match(r"(?:[^\:]+):(.*)", env.label)[1]
         @assert !isempty(env.originalfile) "Cannot make a label for an environment without a known origin file."
